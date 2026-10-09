@@ -97,16 +97,16 @@ Voice cloning requires:
 - a private local path that is ignored by Git;
 - an explicit decision about deletion and backup.
 
-Never include the reference recording, transcript, voice embedding/prompt, or generated voice samples in the public repository without informed consent and a separate distribution decision.
+Never include the reference recording, transcript, voice embedding/prompt, cache, or generated voice samples in the public repository without informed consent and a separate distribution decision. The current approved generated cloned-voice media may be presented in recruitment/demo and portfolio media, but that public display authorization does not permit repository distribution of the reference or derived private materials.
 
 ## 7. Live2D assets
 
-The tested Live2D character and Cubism Core runtime are not automatically redistributable with this repository. Until terms are confirmed:
+The current tested Live2D character is authorized for public screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations. This display authorization does not permit redistribution of its source assets. Cubism Core redistribution terms remain under verification. Therefore:
 
 - exclude `moc3`, textures, motions, expressions, model JSON, and Cubism Core;
 - provide a placeholder or local-placement README;
 - do not imply that the renderer's MIT license covers the model or runtime;
-- do not publish screenshots or demo footage unless the asset terms permit that use.
+- publish screenshots or demo footage only within the confirmed display authorization; do not infer source-asset or Cubism Core redistribution rights from that authorization.
 
 ## 8. Verification manifest
 
@@ -121,4 +121,3 @@ The release should provide a non-secret local manifest template:
 | Qwen3-TTS 0.6B Base | Repository snapshot | To be recorded | To be recorded |
 
 Checksums confirm local file identity; they do not replace upstream license review.
-

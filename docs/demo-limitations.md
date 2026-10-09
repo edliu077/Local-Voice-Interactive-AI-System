@@ -59,7 +59,7 @@ The project does not generate real-time human video. Live2D was chosen to reduce
 
 ### Asset redistribution
 
-The public code package may not include the tested voice reference, character model, or Cubism runtime. A local demonstration can depend on private authorized assets that are not downloadable from the repository.
+The public code package does not include the tested voice reference, character source model, or Cubism runtime. Public display authorization is confirmed for the current tested Live2D character and approved generated cloned-voice media, but those media rights do not grant repository redistribution rights for the character files, reference WAV, transcript, derived voice artifacts, or Cubism Core. A local demonstration can therefore depend on authorized assets that are not downloadable from the repository.
 
 ## Evaluation guidance
 
@@ -74,4 +74,3 @@ Review the demo as evidence of:
 - privacy and release-boundary awareness.
 
 Do not interpret it as evidence that the system is ready for unattended use, external customers, public hosting, or arbitrary hardware.
-

@@ -6,7 +6,7 @@ The roadmap separates required release work from optional Development research. 
 
 ### Completed in Demo Stable working copy
 
-The following items are complete in the current Demo Stable working directory. They are not yet a claim that a fresh public clone reproduces the same result.
+The following items are complete in the current Demo Stable working directory, including the recorded clean local clone validation on the tested machine.
 
 - [x] Root `.gitignore` added for private assets, models, logs, runtime output, caches, and binaries.
 - [x] `.env.example` added without private values.
@@ -25,22 +25,25 @@ The following items are complete in the current Demo Stable working directory. T
 - [x] Public-facing internal names were cleaned up.
 - [x] Live2D production browser configuration moved to `NEXT_PUBLIC_LVIAI_*` URLs and regression-tested.
 - [x] Final post-hardening 1-turn speech smoke passed.
+- [x] Clean local clone validated with `.env` and private/model/audio/binary assets excluded.
+- [x] `npm ci`, ESLint, TypeScript `--noEmit`, and the Next.js production build passed in the clean clone.
+- [x] Stable contract tests (4/4) and launcher hardening tests passed in the clean clone.
+- [x] Frontend production dependencies reconciled to Next.js `16.3.8`, sharp `0.35.5`, and source-map-js `1.2.2`; production audit reports zero vulnerabilities.
+- [x] Current tested Live2D character authorized for public screenshots, GIFs, recruitment/demo videos, and portfolio/recruitment presentation.
+- [x] Approved generated cloned-voice media authorized for public recruitment/demo and portfolio media.
+- [x] Original project code/document policy recorded as All rights reserved.
+- [x] Final candidate privacy/scope and Markdown-link scans passed before Git initialization.
 
 ### Still required before public GitHub release
 
-- [ ] Validate the complete published package from a clean clone/directory using only public instructions.
-- [ ] Reconcile every dependency and runtime version with the final Demo Stable manifests and installed-package exports.
+- [ ] Complete external model/runtime artifact revision and checksum records.
 - [ ] Record exact Python, Node.js, npm, browser, and GPU-driver versions used for the release acceptance run.
 - [ ] Record checksums for stable model artifacts and the exact llama.cpp release package.
-- [ ] Select the public license for original project code and document exclusions clearly.
-- [ ] Confirm Live2D model and Cubism Core screenshot/video/runtime redistribution permissions.
-- [ ] Run the full pre-commit scan for secrets, transcripts, usernames, absolute paths, binaries, audio, model weights, and large files.
-- [ ] Re-run frontend lint and `next build --webpack` from the clean package.
+- [ ] Confirm Cubism Core publication and runtime redistribution terms; continue excluding it until verified.
 - [ ] Re-run 1/2/6-turn acceptance from the clean package.
 - [ ] Capture and review sanitized screenshots.
 - [ ] Record and review the 60–90 second recruitment demo.
-- [ ] Run final repository link checking after filenames and layout are frozen.
-- [ ] Confirm that no Git repository is initialized until the clean package passes the privacy and scope checks.
+- [ ] Re-run final repository link checking if filenames or document layout change before public push.
 
 ## v0.10 — Test and diagnostics improvements
 
@@ -80,4 +83,3 @@ Keep 4B isolated until full-chain RAM, latency, and quality measurements show a 
 - real-time diffusion/video avatar generation on the validated laptop;
 - automatic collection or upload of private audio;
 - claims of production readiness without a separate security and operational review.
-

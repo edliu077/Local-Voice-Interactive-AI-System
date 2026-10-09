@@ -42,7 +42,7 @@ The reference voice recording and exact transcript are sensitive biometric-like 
 - Keep the WAV and transcript outside Git tracking.
 - Do not place them in example configuration or documentation.
 - Do not upload them to issue trackers or model-hosting services as part of this project.
-- Treat any derived prompt, embedding, cache, and generated samples as private unless separately approved.
+- Treat any derived prompt, embedding, and cache as private. Generated samples remain private unless separately approved; the current approved generated cloned-voice media has public display authorization, but that approval does not cover reference or derived private artifacts.
 - Provide a documented deletion procedure for local reference and generated files.
 
 ## Generated audio
@@ -51,14 +51,15 @@ TTS output can reveal both the assistant text and the reference voice identity.
 
 - Store generated WAV files only in the ignored runtime directory.
 - Delete warm-up and conversation output after testing when it is no longer needed.
-- Do not publish generated samples without checking voice consent, content, and asset rights.
+- Do not publish generated samples without checking voice consent, content, and asset rights. Those checks have been completed for the current approved recruitment/demo and portfolio media only.
 
 ## Live2D and visual assets
 
 Character models may have license and identity restrictions separate from the source code.
 
-- Keep unverified model files private.
-- Confirm whether screenshots, videos, derivative works, and repository redistribution are permitted.
+- Keep source model files private and outside Git unless repository redistribution is separately authorized.
+- Public display authorization is confirmed for the current tested character in screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations.
+- Treat display authorization and repository redistribution as separate rights; the current source model assets remain excluded.
 - Do not assume the rendering library license grants rights to character assets or Cubism Core.
 
 ## Local network exposure
@@ -87,7 +88,7 @@ The public repository must exclude:
 - PID and temporary files;
 - personal machine environment reports;
 - user-profile paths and names;
-- unverified Live2D/Cubism assets.
+- Live2D source model assets and Cubism Core runtime.
 
 ## Before sharing logs or screenshots
 
@@ -116,4 +117,3 @@ To remove local conversation artifacts:
 6. verify that deleted artifacts were never added to Git history or a cloud backup.
 
 This project does not claim secure deletion from storage media or backups.
-

@@ -12,9 +12,9 @@ The stable path uses Windows-specific launch and audio behavior. macOS, Linux, W
 
 The complete chain has been validated on one laptop configuration: RTX 4060 Laptop GPU with 8 GB VRAM and 16 GB RAM. Other NVIDIA GPUs, integrated graphics, CPU-only TTS, and lower-memory systems are not guaranteed.
 
-### Clean-clone installation is still a release gate
+### Clean-clone validation has passed
 
-The runtime has passed final manual acceptance in the Demo Stable working directory. The public package still needs a clean-clone test using only the published setup and model-placement instructions.
+A clean local clone was validated using the public package boundary. `.env` and private/model/audio/binary assets remained excluded. `npm ci`, ESLint, TypeScript `--noEmit`, the Next.js production build, stable contract tests (4/4), and launcher hardening tests all passed. This validates package reproducibility on the tested machine; it does not expand the supported platform or hardware scope.
 
 ## Models and startup
 
@@ -70,9 +70,11 @@ VAD behavior depends on microphone gain, room noise, speaker volume, and device 
 
 The voice-cloning reference audio and transcript are not distributed. A user must provide an authorized local reference and accept the associated privacy and consent responsibilities.
 
-### Live2D runtime/model redistribution is unresolved
+Approved generated cloned-voice media may be used in recruitment demo videos, portfolio videos, project presentations, and public demo media. This authorization does not apply to the reference WAV, transcript, derived voice prompt, voice embedding, cache, or other private source material.
 
-The tested Live2D model and Cubism Core runtime must not be assumed redistributable. The public repository should use placeholders and local-placement instructions until the relevant terms are confirmed.
+### Live2D source assets remain excluded
+
+The current tested Live2D character is authorized for public screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations. Its original model files, textures, moc3, motions, expressions, and metadata remain excluded from the repository because display authorization does not grant source-asset redistribution rights. Cubism Core redistribution terms remain under verification, so the public repository continues to use placeholders and local-placement instructions.
 
 ## Security and deployment
 
@@ -80,9 +82,11 @@ The tested Live2D model and Cubism Core runtime must not be assumed redistributa
 
 Services bind to `127.0.0.1`, but v0.9 is not designed for hostile multi-user hosts, untrusted local processes, or internet exposure. It has no production authentication or authorization model.
 
-### Dependency reconciliation remains required
+### Frontend production dependencies are reconciled
 
-The final Demo Stable manifests must be checked against the versions recorded in `THIRD_PARTY_NOTICES.md`, and a fresh dependency vulnerability scan must pass or have documented exceptions before release.
+The final frontend lockfile uses Next.js `16.3.8`, sharp `0.35.5`, and source-map-js `1.2.2`. `npm audit --omit=dev` reports zero production vulnerabilities.
+
+The remaining npm audit findings are confined to the development-only `eslint-config-next` → `fast-glob` → `micromatch` → `braces` chain. They do not enter the production runtime. npm currently offers only a forced breaking downgrade to address this chain, so `npm audit fix --force` is intentionally not used. Treat this as a documented, non-blocking development-tooling limitation and re-evaluate when a compatible upstream fix is available.
 
 ## Reporting an issue
 
@@ -94,4 +98,3 @@ When reporting a reproducible problem, include:
 - the failing service and local port;
 - sanitized logs with personal transcripts and absolute user paths removed;
 - whether the failure occurs on cold start, warm start, or a specific turn.
-

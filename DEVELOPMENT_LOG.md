@@ -153,9 +153,36 @@ Validated on the target Windows machine:
 - playback ACK ordering
 - half-duplex self-listening prevention
 
+### Frontend dependency security remediation
+
+The frontend dependency lock was updated without a forced audit fix or a major-version downgrade:
+
+- Next.js `16.3.8`;
+- sharp `0.35.5`;
+- source-map-js `1.2.2`.
+
+`npm ci`, ESLint, TypeScript `--noEmit`, and the Next.js Webpack production build passed after the update. `npm audit --omit=dev` reported zero production vulnerabilities. The remaining audit advisory is confined to the development-only ESLint/braces chain; it is non-runtime and is not being addressed through the breaking downgrade proposed by `npm audit fix --force`.
+
+### Clean-clone validation
+
+A clean local clone completed the documented package validation with `.env` and private/model/audio/binary assets excluded. The following checks passed:
+
+- `npm ci`;
+- ESLint;
+- TypeScript `--noEmit`;
+- Next.js production build;
+- stable contract tests (4/4);
+- launcher hardening tests.
+
+### Public media rights boundary
+
+Public display authorization has been confirmed for the current tested Live2D character in screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations. The character's original model files, textures, moc3, motions, expressions, and metadata remain excluded because display authorization does not grant repository redistribution rights. Cubism Core terms remain separately subject to verification.
+
+Approved generated cloned-voice output is authorized for public recruitment/demo and portfolio media. The reference WAV, reference transcript, derived voice prompt, voice embedding, cache, and other private source material remain private and excluded from Git.
+
 ### Current stage
 
-The runtime is now in GitHub documentation and release-packaging preparation. No public Git history should be initialized until the clean package has passed final dependency reconciliation, license review, privacy scans, and clean-clone setup validation.
+The runtime is now in final GitHub documentation and release-packaging preparation. Git is initialized on `main`; clean-clone validation, frontend production dependency remediation, privacy/scope scans, and the documented media-rights review have passed. Remaining release work is limited to external artifact revision/checksum records, Cubism Core rights verification, any required upstream license texts, and final sanitized media capture/review.
 
 ## Development-only work not promoted to Demo Stable
 
@@ -170,4 +197,3 @@ Context summarization and memory-related work exists in Development. It is not p
 ### F0-B — Qwen3-4B feasibility
 
 The 4B model remains an isolated feasibility experiment. The stable model is Qwen3-1.7B.
-

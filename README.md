@@ -11,7 +11,7 @@ This repository is prepared as a **Recruitment Preview v0.9**. It focuses on the
 - **60–90 second recruitment demo:** coming before public release
 - **Sanitized screenshots:** pending final capture
 
-No video, GIF, screenshot, or repository link is published here yet. This section will be updated only after the final captures have been reviewed for private audio, transcripts, local paths, and third-party asset permissions.
+No video, GIF, screenshot, or repository link is published here yet. Public display authorization has been confirmed for the current tested Live2D character and approved generated cloned-voice media. Final captures must still be reviewed for private reference material, transcripts, local paths, and accidental inclusion of source assets. Media authorization does not permit redistribution of the Live2D model files or private voice-reference material.
 
 ## Demo Stable status
 
@@ -137,7 +137,7 @@ The public repository is intended to contain source code, configuration template
 - private voice-reference audio or its transcript;
 - generated or recorded runtime audio;
 - conversation logs;
-- unverified Live2D character assets;
+- Live2D source model assets and Cubism Core runtime;
 - the private Development repository or its experimental history.
 
 Read [docs/privacy.md](docs/privacy.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) before adding local assets.
@@ -158,7 +158,9 @@ Read [docs/privacy.md](docs/privacy.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY
 
 `v0.9` is in final GitHub packaging preparation. The Demo Stable runtime is frozen after 1/2/6-turn acceptance, launcher hardening, the Live2D production-configuration fix, and a final 1-turn speech smoke test.
 
-The local Git repository has been initialized and the first recruitment-preview commits have been created. Before public release, the remaining gates are clean-clone validation, final dependency/version reconciliation, third-party redistribution verification, and review of sanitized screenshots and demo media.
+The local Git repository has been initialized and the first recruitment-preview commits have been created. Clean-clone validation has passed with `.env`, private/model/audio/binary assets excluded; `npm ci`, ESLint, TypeScript `--noEmit`, the Next.js production build, stable contract tests (4/4), and launcher hardening tests all passed in the clean local clone.
+
+Before public release, the remaining gates are artifact revision/checksum records, Cubism Core redistribution verification, any required upstream license texts, and final review of sanitized screenshots and demo media.
 
 ## License status
 

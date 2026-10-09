@@ -11,7 +11,7 @@
 - **60–90 秒招聘展示视频：** 正式公开前补充
 - **脱敏截图：** 等待最终拍摄与审核
 
-当前不虚构任何视频、GIF、截图或仓库链接。正式素材只有在完成私人音频、转录文本、本机路径和第三方资产权限检查后才会加入。
+当前不虚构任何视频、GIF、截图或仓库链接。当前 tested Live2D character 和已批准的 generated cloned-voice media 已确认可用于公开展示。最终素材仍须检查私人参考材料、转录文本、本机路径以及是否意外包含源资产；媒体展示授权不等于 Live2D 原始模型文件或私人声音参考材料的再分发授权。
 
 ## Demo Stable 当前状态
 
@@ -124,7 +124,7 @@ STT 和 TTS 采用本机常驻服务，避免每轮重复加载模型。浏览�
 - llama.cpp 二进制；
 - 私人声音参考音频和文本；
 - 录音、生成语音与对话日志；
-- 未确认公开再分发权的 Live2D 资源；
+- Live2D 原始模型资源和 Cubism Core 运行时；
 - 私有 Development 仓库和实验历史。
 
 具体隐私与资产边界见 [docs/privacy.md](docs/privacy.md) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
@@ -145,7 +145,9 @@ STT 和 TTS 采用本机常驻服务，避免每轮重复加载模型。浏览�
 
 `v0.9` 已进入 GitHub 最终发布包装阶段。Demo Stable 已完成 1/2/6 轮人工验收、launcher hardening、Live2D production 配置修复以及最终 1 轮语音 smoke test，并已冻结当前稳定运行版本。
 
-本地 Git 仓库已完成初始化，并已经创建 Recruitment Preview 的首批本地提交。正式公开前仍需完成 clean-clone 验证、最终依赖与版本核对、第三方许可与再分发边界确认，以及脱敏截图和招聘展示视频的最终审核。
+本地 Git 仓库已完成初始化，并已经创建 Recruitment Preview 的首批本地提交。Clean-clone 验证已经通过：`.env`、私人/模型/音频/二进制资产均被排除，`npm ci`、ESLint、TypeScript `--noEmit`、Next.js production build、稳定契约测试 4/4 和 launcher hardening tests 均在全新本地 clone 中通过。
+
+正式公开前剩余事项包括：记录外部 artifact 的 revision/checksum、核验 Cubism Core 再分发条款、补充必要的上游许可证文本，以及完成脱敏截图和招聘展示视频的最终审核。
 
 ## 许可证状态
 
@@ -160,4 +162,3 @@ Copyright © 2026 Enhua Liu. All rights reserved.
 本仓库主要用于个人作品集展示与招聘评估。仓库中的原创源代码和文档可供查看与评估，但目前不提供开源许可证，也未授予复制、修改、重新分发或商业使用的许可。
 
 第三方软件、模型、运行时、声音材料、Live2D 素材和 Cubism 组件仍受其各自许可证和使用条款约束，详情请参阅 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-
