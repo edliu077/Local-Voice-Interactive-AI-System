@@ -156,11 +156,15 @@ Read [docs/privacy.md](docs/privacy.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY
 
 ## Current release stage
 
-`v0.9` is in final GitHub packaging preparation. The Demo Stable runtime is frozen after 1/2/6-turn acceptance, launcher hardening, the Live2D production-configuration fix, and a final 1-turn speech smoke test. The public repository package still requires final dependency/version reconciliation, redistribution checks, clean-clone setup validation, licensing decisions, and pre-commit privacy scanning.
+`v0.9` is in final GitHub packaging preparation. The Demo Stable runtime is frozen after 1/2/6-turn acceptance, launcher hardening, the Live2D production-configuration fix, and a final 1-turn speech smoke test.
+
+The local Git repository has been initialized and the first recruitment-preview commits have been created. Before public release, the remaining gates are clean-clone validation, final dependency/version reconciliation, third-party redistribution verification, and review of sanitized screenshots and demo media.
 
 ## License status
 
-No blanket license should be assumed for models, voice references, Live2D assets, or the Cubism runtime. The project code license will apply only to original source files explicitly included in the public repository. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for component-specific terms and unresolved verification items.
+No open-source license is granted for the original source code or documentation in this repository. Copyright © 2026 Enhua Liu. All rights reserved.
+
+Third-party software, models, runtimes, voice materials, Live2D assets, and Cubism components remain subject to their respective licenses and terms. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for component-specific terms and unresolved verification items.
 
 ## Copyright and Usage
 

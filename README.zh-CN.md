@@ -143,11 +143,15 @@ STT 和 TTS 采用本机常驻服务，避免每轮重复加载模型。浏览�
 
 ## 当前发布阶段
 
-`v0.9` 已进入 GitHub 最终发布包装阶段。Demo Stable 在 1/2/6 轮验收、launcher hardening、Live2D production 配置修复和最终 1 轮语音 smoke test 后已冻结；正式公开前仍需核对最终依赖版本、确认第三方资产再分发边界与许可证、执行全新 clone 安装验证，并再次扫描隐私信息和大文件。
+`v0.9` 已进入 GitHub 最终发布包装阶段。Demo Stable 已完成 1/2/6 轮人工验收、launcher hardening、Live2D production 配置修复以及最终 1 轮语音 smoke test，并已冻结当前稳定运行版本。
+
+本地 Git 仓库已完成初始化，并已经创建 Recruitment Preview 的首批本地提交。正式公开前仍需完成 clean-clone 验证、最终依赖与版本核对、第三方许可与再分发边界确认，以及脱敏截图和招聘展示视频的最终审核。
 
 ## 许可证状态
 
-模型、声音参考、Live2D 素材和 Cubism runtime 不受一个统一许可证覆盖。未来仓库中的项目代码许可证只适用于明确纳入公开仓库的原创代码；各第三方组件的条款和待确认事项见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+本仓库中的原创源代码和文档目前不提供开源许可证。Copyright © 2026 Enhua Liu. All rights reserved.
+
+第三方软件、模型、运行时、声音材料、Live2D 素材和 Cubism 组件仍受其各自许可证和使用条款约束。各组件的具体条款和待确认事项见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 ## 版权与使用说明
 
