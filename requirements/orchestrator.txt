@@ -1,0 +1,17 @@
+# Draft for the validated local WebSocket/VAD orchestration environment.
+# Sources: stage-b0 installed-package records plus direct imports in
+# voice_ws_server.py and vad_capture.py. Install and validate this environment
+# independently from the TTS CUDA environment.
+
+numpy==2.4.6
+psutil==7.2.2
+sounddevice==0.5.5
+speech-to-speech==0.2.11
+torch==2.13.0
+websockets==16.1.1
+
+# Required by voice_ws_server.py. The exact installed version was not captured
+# in the retained logs and must be verified in the known-working environment
+# before this draft is promoted to a lock file.
+opencc-python-reimplemented
+

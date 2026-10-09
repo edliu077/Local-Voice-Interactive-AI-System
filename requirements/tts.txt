@@ -1,0 +1,16 @@
+# Draft for the validated Qwen3-TTS CUDA 12.8 environment.
+# Keep this environment separate from orchestrator/STT. The extra index is
+# required for the recorded Windows CUDA wheels; it does not modify drivers.
+
+--extra-index-url https://download.pytorch.org/whl/cu128
+
+torch==2.7.1+cu128
+torchaudio==2.7.1+cu128
+qwen-tts==0.1.1
+faster-qwen3-tts==0.3.2
+fastapi==0.140.13
+pydantic==2.13.4
+psutil==7.2.2
+soundfile==0.14.0
+uvicorn==0.51.0
+

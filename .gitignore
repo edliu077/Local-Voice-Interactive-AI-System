@@ -1,0 +1,86 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+venv/
+env/
+**/.venv/
+**/venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+**/.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+pip-wheel-metadata/
+
+# Node / Next.js build products
+**/node_modules/
+**/.next/
+**/out/
+**/dist/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Downloaded model caches and weights
+/models/*
+!/models/README.md
+*.gguf
+*.bin
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.ckpt
+*.tflite
+*.engine
+*.weights
+
+# Downloaded tools and archives. Only the public setup placeholder is tracked.
+/tools/*
+!/tools/README.md
+
+# Runtime data, logs, generated outputs, and process markers
+/runtime/
+/logs/
+**/runtime/**
+!/runtime/
+!/runtime/.gitkeep
+**/logs/**
+**/outputs/**
+*.pid
+*.tmp
+*.log
+
+# Private voice-clone inputs and provenance-unverified audio
+/assets/voice-clone/
+/assets/voice/*
+!/assets/voice/README.md
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+
+# Live2D models and Cubism runtime are quarantined until redistribution terms
+# are verified. A future public README may be added without exposing assets.
+/assets/live2d/*
+!/assets/live2d/README.md
+/frontend/public/live2d/**
+!/frontend/public/live2d/README.md
+
+# Editor and operating-system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo

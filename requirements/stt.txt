@@ -1,0 +1,9 @@
+# Draft for the validated persistent Faster-Whisper CPU int8 service.
+# Versions come from the B0/C0 pip-list and package-metadata records.
+
+av==18.0.0
+ctranslate2==4.8.1
+faster-whisper==1.2.1
+numpy==2.4.6
+psutil==7.2.2
+

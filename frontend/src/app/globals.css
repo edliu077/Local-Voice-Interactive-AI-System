@@ -1,0 +1,86 @@
+:root {
+  color-scheme: dark;
+  font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  background: #07101f;
+  color: #edf4ff;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 960px; min-height: 100vh; overflow: hidden; }
+button, select { font: inherit; }
+
+.shell {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  padding: 22px clamp(28px, 5vw, 88px);
+  background:
+    radial-gradient(circle at 50% 24%, rgba(94, 114, 255, .20), transparent 34%),
+    radial-gradient(circle at 20% 92%, rgba(33, 213, 186, .12), transparent 32%),
+    #07101f;
+}
+.topbar, .console-header, .status-row, .controls, .history-item { display: flex; align-items: center; }
+.topbar { position: relative; z-index: 2; justify-content: space-between; gap: 24px; }
+.eyebrow { margin: 0 0 4px; color: #87a6ff; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(25px, 2.7vw, 38px); font-weight: 600; letter-spacing: .03em; }
+.connection { padding: 9px 13px; border: 1px solid #273959; border-radius: 999px; color: #afbed9; font-size: 13px; }
+.connection.connected { border-color: #45d9b4; color: #80f0d2; }
+.connection.connecting { border-color: #8ba4ff; color: #b7c5ff; }
+.connection.error { border-color: #ed7184; color: #ffa8b4; }
+.stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 90px 0 280px;
+  pointer-events: none;
+}
+.live2d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.placeholder { color: #aab7df; font-size: 12px; letter-spacing: .14em; opacity: .18; text-transform: uppercase; }
+.placeholder[hidden] { display: none; }
+.live2d-error { position: absolute; top: 50%; left: 50%; margin: 0; color: #ffafba; font-size: 13px; transform: translate(-50%, -50%); }
+.console {
+  position: fixed;
+  z-index: 3;
+  bottom: clamp(22px, 3.2vh, 38px);
+  left: 50%;
+  width: min(1040px, calc(100vw - 80px));
+  height: min(252px, 30vh);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-50%);
+  overflow: hidden;
+  padding: 14px 16px;
+  border: 1px solid rgba(132, 157, 230, .22);
+  border-radius: 18px;
+  background: rgba(9, 18, 39, .88);
+  box-shadow: 0 18px 58px rgba(0,0,0,.22);
+  backdrop-filter: blur(16px);
+}
+.console-header { justify-content: space-between; gap: 18px; margin-bottom: 8px; }
+.state-label { color: #9fb0cf; font-size: 13px; }
+.state-value { margin-left: 9px; color: #ecf1ff; font-size: 16px; }
+.activity { color: #7e91b7; font-size: 13px; }
+.subtitle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.subtitle { height: 64px; min-height: 0; overflow-y: auto; padding: 9px 12px; border-radius: 12px; background: rgba(22, 35, 70, .58); }
+.subtitle .speaker { display: inline; margin-right: 9px; color: #8ea1ce; font-size: 13px; }
+.subtitle p { margin: 0; line-height: 1.65; white-space: pre-wrap; }
+.subtitle.assistant { background: rgba(48, 53, 117, .48); }
+.controls { justify-content: space-between; gap: 16px; margin-top: 9px; }
+.button-group, .turn-select { display: flex; align-items: center; gap: 9px; }
+button, select { border: 1px solid #354c79; border-radius: 9px; padding: 7px 11px; background: #17284d; color: #ecf2ff; cursor: pointer; }
+button.primary { background: linear-gradient(135deg, #6c71ff, #9b61e7); border-color: transparent; }
+button.danger { color: #ffc0c9; background: #472034; }
+button:disabled { opacity: .42; cursor: not-allowed; }
+.error-message { margin: 15px 0 0; color: #ffafba; font-size: 13px; }
+.history { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 9px; border-top: 1px solid rgba(128, 151, 205, .20); padding-top: 7px; }
+.history h2 { margin: 0 0 3px; color: #abb9d5; font-size: 12px; font-weight: 500; }
+.history-list { flex: 1; min-height: 0; overflow: auto; padding-right: 6px; }
+.history-item { gap: 9px; padding: 3px 0; line-height: 1.45; font-size: 13px; }
+.history-item span { min-width: 25px; color: #8da6e5; font-size: 13px; }
+.history-item p { margin: 0; white-space: pre-wrap; }
+@media (max-height: 820px) {
+  .shell { padding-top: 16px; }
+  .console { bottom: 18px; height: min(236px, 31vh); }
+  .stage { padding-bottom: 250px; }
+}
