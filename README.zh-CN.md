@@ -153,13 +153,11 @@ STT 和 TTS 采用本机常驻服务，避免每轮重复加载模型。浏览�
 
 第三方软件、模型、运行时、声音材料、Live2D 素材和 Cubism 组件仍受其各自许可证和使用条款约束。各组件的具体条款和待确认事项见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
-## 版权与使用说明
+## 版权、许可与使用说明
 
 Copyright © 2026 Enhua Liu. All rights reserved.
 
-本仓库主要用于个人作品集展示与评估。
+本仓库主要用于个人作品集展示与招聘评估。仓库中的原创源代码和文档可供查看与评估，但目前不提供开源许可证，也未授予复制、修改、重新分发或商业使用的许可。
 
-仓库中的原创源代码和文档可供查看与评估，但未授予复制、修改、重新分发或商业使用的许可。
-
-第三方软件、模型、运行时和其他资产仍受其各自许可证和使用条款约束，详情请参阅 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+第三方软件、模型、运行时、声音材料、Live2D 素材和 Cubism 组件仍受其各自许可证和使用条款约束，详情请参阅 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 

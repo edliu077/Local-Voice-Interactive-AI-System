@@ -166,13 +166,10 @@ No open-source license is granted for the original source code or documentation 
 
 Third-party software, models, runtimes, voice materials, Live2D assets, and Cubism components remain subject to their respective licenses and terms. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for component-specific terms and unresolved verification items.
 
-## Copyright and Usage
+## Copyright, Licensing and Usage
 
 Copyright © 2026 Enhua Liu. All rights reserved.
 
-This repository is published primarily for portfolio and review purposes.
+This repository is published primarily for portfolio and recruitment review purposes. The original source code and documentation may be viewed for evaluation, but no open-source license or permission for copying, modification, redistribution, or commercial use is granted.
 
-The original source code and documentation may be viewed for evaluation, but no license is granted for copying, modification, redistribution, or commercial use.
-
-Third-party software, models, runtimes, and assets remain subject to their respective licenses and terms. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
-
+Third-party software, models, runtimes, voice materials, Live2D assets, and Cubism components remain subject to their respective licenses and terms. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
