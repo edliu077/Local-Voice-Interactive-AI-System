@@ -74,7 +74,11 @@ Approved generated cloned-voice media may be used in recruitment demo videos, po
 
 ### Live2D source assets remain excluded
 
-The current tested Live2D character is authorized for public screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations. Its original model files, textures, moc3, motions, expressions, and metadata remain excluded from the repository because display authorization does not grant source-asset redistribution rights. Cubism Core redistribution terms remain under verification, so the public repository continues to use placeholders and local-placement instructions.
+The current tested Live2D character is authorized for public screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations. Its original model files, textures, moc3, motions, expressions, and metadata remain excluded from the repository because display authorization does not grant source-asset redistribution rights. Cubism Core remains an external local dependency and is not redistributed in the tracked source repository. A future public runnable package, hosted application, or media release must still follow the applicable Live2D publication classification; the renderer's MIT license does not cover Core.
+
+### External artifact reproducibility gaps are non-blocking
+
+The retained Silero Torch Hub cache reports local metadata version `6.2.1`, and the loaded JIT checksum is recorded, but the cache did not preserve the exact Git commit. Exact PyTorch and torchaudio wheel URLs and hashes were also not retained. These are P2 reproducibility improvements because the cache and wheels remain external; they are not public-source redistribution blockers.
 
 ## Security and deployment
 

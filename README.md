@@ -160,7 +160,7 @@ Read [docs/privacy.md](docs/privacy.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY
 
 The local Git repository has been initialized and the first recruitment-preview commits have been created. Clean-clone validation has passed with `.env`, private/model/audio/binary assets excluded; `npm ci`, ESLint, TypeScript `--noEmit`, the Next.js production build, stable contract tests (4/4), and launcher hardening tests all passed in the clean local clone.
 
-Before public release, the remaining gates are artifact revision/checksum records, Cubism Core redistribution verification, any required upstream license texts, and final review of sanitized screenshots and demo media.
+External artifact revisions and checksums have been reconciled for llama.cpp, Qwen3-1.7B GGUF, Qwen3-TTS, and Faster-Whisper Small. The final tracked-tree and Git-history audit found no P0/P1 blocker to changing the repository from private to public. Silero's exact cached commit, exact PyTorch wheel hashes, and future Cubism runnable/media publication classification remain documented P2 follow-ups; screenshots and the 60–90 second demo remain release-presentation work, not source-publication blockers.
 
 ## License status
 

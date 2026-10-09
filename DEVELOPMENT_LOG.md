@@ -176,13 +176,24 @@ A clean local clone completed the documented package validation with `.env` and 
 
 ### Public media rights boundary
 
-Public display authorization has been confirmed for the current tested Live2D character in screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations. The character's original model files, textures, moc3, motions, expressions, and metadata remain excluded because display authorization does not grant repository redistribution rights. Cubism Core terms remain separately subject to verification.
+Public display authorization has been confirmed for the current tested Live2D character in screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations. The character's original model files, textures, moc3, motions, expressions, and metadata remain excluded because display authorization does not grant repository redistribution rights. Cubism Core remains external and is not redistributed; future runnable application and media publication classification remains separately governed by the applicable Live2D terms.
 
 Approved generated cloned-voice output is authorized for public recruitment/demo and portfolio media. The reference WAV, reference transcript, derived voice prompt, voice embedding, cache, and other private source material remain private and excluded from Git.
 
+### External artifact evidence finalization
+
+The final local evidence review recorded:
+
+- llama.cpp release `b10516`, commit `b95502ba9aa0eb73a2f4fc8878d7fbe6a847a0b9`, and the official Windows CPU ZIP checksum;
+- Qwen3-1.7B Q4_K_M revision `daeb8e2d528a760970442092f6bf1e55c3b659eb` and matching GGUF checksum;
+- Qwen3-TTS 0.6B Base revision `5d83992436eae1d760afd27aff78a71d676296fc` and main model/tokenizer weight checksums;
+- Faster-Whisper Small snapshot `536b0662742c02347bc0e980a01041f333bce120`;
+- Silero local metadata version `6.2.1` and JIT checksum, with the exact cached commit retained as a P2 reproducibility gap;
+- PyTorch and torchaudio `2.7.1+cu128` with CUDA build `12.8`, while wheels remain external.
+
 ### Current stage
 
-The runtime is now in final GitHub documentation and release-packaging preparation. Git is initialized on `main`; clean-clone validation, frontend production dependency remediation, privacy/scope scans, and the documented media-rights review have passed. Remaining release work is limited to external artifact revision/checksum records, Cubism Core rights verification, any required upstream license texts, and final sanitized media capture/review.
+The runtime and source package are ready for the repository visibility decision. Git is initialized on `main`; clean-clone validation, frontend production dependency remediation, privacy/scope scans, media-rights review, external-artifact evidence review, and final tracked-tree/full-history audit have passed. No P0/P1 source-publication blocker remains. Exact Silero commit recovery, optional wheel hashes, future Cubism runnable/media publication classification, and final sanitized media capture remain documented P2 follow-up work.
 
 ## Development-only work not promoted to Demo Stable
 

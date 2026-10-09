@@ -34,16 +34,18 @@ The following items are complete in the current Demo Stable working directory, i
 - [x] Original project code/document policy recorded as All rights reserved.
 - [x] Final candidate privacy/scope and Markdown-link scans passed before Git initialization.
 
-### Still required before public GitHub release
+### Remaining release polish and non-blocking follow-up
 
-- [ ] Complete external model/runtime artifact revision and checksum records.
+- [x] Complete available external model/runtime artifact revision and checksum records.
 - [ ] Record exact Python, Node.js, npm, browser, and GPU-driver versions used for the release acceptance run.
-- [ ] Record checksums for stable model artifacts and the exact llama.cpp release package.
-- [ ] Confirm Cubism Core publication and runtime redistribution terms; continue excluding it until verified.
+- [x] Record checksums for stable model artifacts and the exact llama.cpp release package.
+- [x] Confirm that Cubism Core is external and absent from the tracked source repository; continue excluding it.
+- [ ] Recover or deliberately repin the exact Silero VAD commit and optionally record exact PyTorch/torchaudio wheel hashes (P2 reproducibility).
+- [ ] Confirm the applicable Cubism publication classification before distributing a future runnable package, hosted application, or public media.
 - [ ] Re-run 1/2/6-turn acceptance from the clean package.
 - [ ] Capture and review sanitized screenshots.
 - [ ] Record and review the 60–90 second recruitment demo.
-- [ ] Re-run final repository link checking if filenames or document layout change before public push.
+- [x] Re-run final repository link, privacy, ignored-asset, tracked-tree, and full-history checks before public visibility change.
 
 ## v0.10 — Test and diagnostics improvements
 

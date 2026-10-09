@@ -147,7 +147,7 @@ STT 和 TTS 采用本机常驻服务，避免每轮重复加载模型。浏览�
 
 本地 Git 仓库已完成初始化，并已经创建 Recruitment Preview 的首批本地提交。Clean-clone 验证已经通过：`.env`、私人/模型/音频/二进制资产均被排除，`npm ci`、ESLint、TypeScript `--noEmit`、Next.js production build、稳定契约测试 4/4 和 launcher hardening tests 均在全新本地 clone 中通过。
 
-正式公开前剩余事项包括：记录外部 artifact 的 revision/checksum、核验 Cubism Core 再分发条款、补充必要的上游许可证文本，以及完成脱敏截图和招聘展示视频的最终审核。
+llama.cpp、Qwen3-1.7B GGUF、Qwen3-TTS 和 Faster-Whisper Small 的外部 artifact revision/checksum 已完成核对。最终 tracked-tree 与完整 Git 历史审计未发现阻止仓库由 Private 切换为 Public 的 P0/P1 问题。Silero 缓存的精确 commit、PyTorch wheel 的精确哈希，以及未来 Cubism 可运行发行物/媒体的 publication 分类继续作为 P2 跟进项；脱敏截图和 60–90 秒招聘视频属于展示完善工作，不阻止当前源码仓库公开。
 
 ## 许可证状态
 
