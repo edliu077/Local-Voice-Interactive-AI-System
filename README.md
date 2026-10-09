@@ -162,3 +162,13 @@ Read [docs/privacy.md](docs/privacy.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY
 
 No blanket license should be assumed for models, voice references, Live2D assets, or the Cubism runtime. The project code license will apply only to original source files explicitly included in the public repository. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for component-specific terms and unresolved verification items.
 
+## Copyright and Usage
+
+Copyright © 2026 Enhua Liu. All rights reserved.
+
+This repository is published primarily for portfolio and review purposes.
+
+The original source code and documentation may be viewed for evaluation, but no license is granted for copying, modification, redistribution, or commercial use.
+
+Third-party software, models, runtimes, and assets remain subject to their respective licenses and terms. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
+

@@ -149,3 +149,13 @@ STT 和 TTS 采用本机常驻服务，避免每轮重复加载模型。浏览�
 
 模型、声音参考、Live2D 素材和 Cubism runtime 不受一个统一许可证覆盖。未来仓库中的项目代码许可证只适用于明确纳入公开仓库的原创代码；各第三方组件的条款和待确认事项见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
+## 版权与使用说明
+
+Copyright © 2026 Enhua Liu. All rights reserved.
+
+本仓库主要用于个人作品集展示与评估。
+
+仓库中的原创源代码和文档可供查看与评估，但未授予复制、修改、重新分发或商业使用的许可。
+
+第三方软件、模型、运行时和其他资产仍受其各自许可证和使用条款约束，详情请参阅 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
