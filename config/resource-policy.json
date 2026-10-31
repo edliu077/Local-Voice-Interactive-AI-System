@@ -1,0 +1,17 @@
+{
+  "version": "stage7h-1",
+  "startup_ram_bytes": {
+    "frontend": 1073741824,
+    "avatar-control": 536870912,
+    "tts": 4294967296,
+    "livetalking": 4294967296,
+    "llm-1.7b": 4294967296,
+    "stt": 2684354560,
+    "ws": 2684354560
+  },
+  "resident_minimum_bytes": 1610612736,
+  "resident_target_bytes": 2147483648,
+  "paging_output_bytes_per_second": 67108864,
+  "paging_pressure_seconds": 10,
+  "evidence": "STAGE7G_RAM_THRESHOLD_AUDIT_REPORT.md sections 6-8; conditional validation policy, not a measured universal safety bound"
+}

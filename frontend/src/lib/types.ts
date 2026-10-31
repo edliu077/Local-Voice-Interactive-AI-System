@@ -8,6 +8,8 @@ export type VoiceState =
   | "ERROR";
 
 export type ConnectionState = "disconnected" | "connecting" | "connected" | "error";
+export type AssistantEmotion = "neutral" | "love" | "sad" | "excited";
+export type PlaybackMode = "avatar_webrtc" | "browser" | "winsound";
 
 export interface BaseWsEvent<TData extends Record<string, unknown> = Record<string, unknown>> {
   type: string;
@@ -19,11 +21,16 @@ export interface BaseWsEvent<TData extends Record<string, unknown> = Record<stri
 
 export interface StateEvent extends BaseWsEvent<{ state: VoiceState }> { type: "state"; }
 export interface UserTranscriptEvent extends BaseWsEvent<{ text: string }> { type: "user_transcript"; }
-export interface AssistantTextEvent extends BaseWsEvent<{ text: string }> { type: "assistant_text"; }
+export interface AssistantTextEvent extends BaseWsEvent<{ text: string; emotion?: AssistantEmotion }> { type: "assistant_text"; }
 export interface SessionReadyEvent extends BaseWsEvent<{ stt: string; llm: string; tts: string; vad: string; playback_mode: string }> { type: "session_ready"; }
 export interface AudioReadyEvent extends BaseWsEvent<{
   audio_path?: string;
-  transport?: "websocket_binary";
+  transport?: "websocket_binary" | "avatar_webrtc";
+  control_id?: string;
+  sessionid?: string;
+  bridge_turn_id?: string;
+  generation?: number;
+  ws_session_id?: string;
   audio_id?: string;
   byte_length?: number;
   content_type?: "audio/wav";
