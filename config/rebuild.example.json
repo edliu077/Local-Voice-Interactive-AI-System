@@ -1,0 +1,16 @@
+{
+  "default_llm_profile": "1.7b",
+  "llama_server": "C:/LOCAL_ASSETS/llama.cpp/llama-server.exe",
+  "llm_profiles": {
+    "1.7b": {
+      "model": "C:/LOCAL_ASSETS/models/Qwen3-1.7B-Q4_K_M.gguf",
+      "port": 8081,
+      "alias": "cybergirlfriend-qwen3-1.7b-rebuild",
+      "model_sha256": "d2387ca2dbfee2ffabce7120d3770dadca0b293052bc2f0e138fdc940d9bc7b5",
+      "expected_tensor_parameters": 2031739904
+    }
+  },
+  "stt_snapshot": "C:/LOCAL_ASSETS/models/faster-whisper-small/snapshots/536b0662742c02347bc0e980a01041f333bce120",
+  "tts_model": "C:/LOCAL_ASSETS/models/qwen3-tts/0.6b-base",
+  "vad_repository": "C:/LOCAL_ASSETS/models/silero-vad"
+}

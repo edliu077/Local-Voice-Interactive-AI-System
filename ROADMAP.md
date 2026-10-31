@@ -1,87 +1,24 @@
-# Roadmap
+# 本地语音交互AI系统（Local Voice-Interactive AI System）— Roadmap
 
-The roadmap separates required release work from optional Development research. Items below are plans, not completion claims.
+**Stage2C3候选范围：本文保留原完整本地系统的设计及历史事实；公开候选未包含LiveTalking运行树、3项待确认新增或修改补丁，不是完整运行包。** Stage2C1依赖修补保持，但此前的build/audit结果不等于本候选运行验收。Q-001/Q-002 OPEN。见[当前发布门槛](docs/release/PUBLICATION_BLOCKERS.md)。
 
-## v0.9 — Recruitment Preview packaging
+按里程碑组织，不用月份作为开发结构。下列状态不代表授权自动执行后续步骤。
 
-### Completed in Demo Stable working copy
+| 里程碑 | 状态 |
+| --- | --- |
+| 早期本地语音链、Live2D/RMS与1/2/6轮 | 目标环境历史功能验收有证据，保留贡献 |
+| Windows Rebuild七服务与产品化 | 原本地开发系统有功能验收记录 |
+| v1.0-rc1功能候选冻结 | 已冻结，Known Quality Issues |
+| 历史文档与源码白名单迁入 | 已静态准备，未提交/推送 |
+| 当前技术文档与发布阻塞审查 | Stage2B完成说明整理；未知项仍BLOCKED |
+| 第三方可公开范围/声明 | BLOCKED，需逐组件闭环或审查替代发布方案 |
+| 迁移副本前端最小安全修补 | 仅建议，尚未修改锁或验证 |
+| 合法外置资产及三环境恢复配方 | BLOCKED，尚未独立重建 |
+| 完整构建/可移植契约/恢复验收 | 未完成，需后续范围授权 |
+| 审查提交、推送或Release | 未执行，须完成门槛并明确授权 |
+| Q-001 / Q-002 | OPEN；不以无限复测/调参替代证据 |
+| 长期稳定性/全异常恢复 | 未验收 |
 
-The following items are complete in the current Demo Stable working directory, including the recorded clean local clone validation on the tested machine.
+不规划重启4B、Hybrid、GPU层数或分时研究，也不通过降低音视频质量、安全门槛或删除数字人来换取表面READY。
 
-- [x] Root `.gitignore` added for private assets, models, logs, runtime output, caches, and binaries.
-- [x] `.env.example` added without private values.
-- [x] Local frontend Origin allowlist added to the WebSocket boundary.
-- [x] Formal project naming applied.
-- [x] Persona wording and recruitment UI copy cleaned up.
-- [x] Frontend moved from `next dev` / Turbopack to `next build --webpack` + `next start`.
-- [x] Development-server OOM isolated and the production frontend path regression-tested.
-- [x] Demo Stable 1-turn, 2-turn, and 6-turn acceptance passed.
-- [x] Stable scope separated from J1-F.2, J2, and Qwen3-4B work.
-- [x] English and Chinese README drafts completed, including Demo and contribution sections.
-- [x] Architecture, development log, known issues, roadmap, third-party, Windows setup, model download, privacy, and demo limitation drafts completed.
-- [x] Unified `Start-Demo.ps1` and `Stop-Demo.ps1` validated in the Demo Stable working copy.
-- [x] Stale PID recovery and verified listener-PID reconciliation added.
-- [x] Qwen3-TTS startup now waits for confirmed `/health` readiness.
-- [x] Public-facing internal names were cleaned up.
-- [x] Live2D production browser configuration moved to `NEXT_PUBLIC_LVIAI_*` URLs and regression-tested.
-- [x] Final post-hardening 1-turn speech smoke passed.
-- [x] Clean local clone validated with `.env` and private/model/audio/binary assets excluded.
-- [x] `npm ci`, ESLint, TypeScript `--noEmit`, and the Next.js production build passed in the clean clone.
-- [x] Stable contract tests (4/4) and launcher hardening tests passed in the clean clone.
-- [x] Frontend production dependencies reconciled to Next.js `16.3.8`, sharp `0.35.5`, and source-map-js `1.2.2`; production audit reports zero vulnerabilities.
-- [x] Current tested Live2D character authorized for public screenshots, GIFs, recruitment/demo videos, and portfolio/recruitment presentation.
-- [x] Approved generated cloned-voice media authorized for public recruitment/demo and portfolio media.
-- [x] Original project code/document policy recorded as All rights reserved.
-- [x] Final candidate privacy/scope and Markdown-link scans passed before Git initialization.
-
-### Remaining release polish and non-blocking follow-up
-
-- [x] Complete available external model/runtime artifact revision and checksum records.
-- [ ] Record exact Python, Node.js, npm, browser, and GPU-driver versions used for the release acceptance run.
-- [x] Record checksums for stable model artifacts and the exact llama.cpp release package.
-- [x] Confirm that Cubism Core is external and absent from the tracked source repository; continue excluding it.
-- [ ] Recover or deliberately repin the exact Silero VAD commit and optionally record exact PyTorch/torchaudio wheel hashes (P2 reproducibility).
-- [ ] Confirm the applicable Cubism publication classification before distributing a future runnable package, hosted application, or public media.
-- [ ] Re-run 1/2/6-turn acceptance from the clean package.
-- [ ] Capture and review sanitized screenshots.
-- [ ] Record and review the 60–90 second recruitment demo.
-- [x] Re-run final repository link, privacy, ignored-asset, tracked-tree, and full-history checks before public visibility change.
-
-## v0.10 — Test and diagnostics improvements
-
-- [ ] Add portable unit and contract tests that do not depend on a fixed drive path.
-- [ ] Add a non-model protocol test mode for WebSocket and browser audio handoff.
-- [ ] Add sanitized sample events for frontend regression tests.
-- [ ] Improve startup diagnostics for missing models, ports, audio devices, and CUDA wheels.
-- [ ] Add a release checklist that produces a machine-readable pass/fail summary.
-- [ ] Measure cold-start and warm-turn latency after the packaging freeze.
-
-## Development candidates — not committed to Demo Stable
-
-### J1-F.2 automatic emotion-expression mapping
-
-Evaluate only after its parser, backend contract, lifecycle reset, and real-browser regressions pass independently. Promotion must not contaminate spoken text with control tags.
-
-### J2 bounded context and memory
-
-Evaluate rolling summaries and memory recall only after deterministic tests cover conflicting facts, corrections, repetition, and hard history caps. Privacy documentation must be updated before any persistent memory is added.
-
-### Qwen3-4B feasibility
-
-Keep 4B isolated until full-chain RAM, latency, and quality measurements show a clear benefit on the 16 GB target machine. It must not silently replace the 1.7B stable baseline.
-
-### Audio and interaction research
-
-- improved endpoint tuning across microphones;
-- optional streaming STT/TTS experiments;
-- interruption handling only if self-listening protection remains reliable;
-- phoneme/viseme lip sync only if the added complexity produces a visible benefit.
-
-## Explicitly out of scope for the current project line
-
-- public internet hosting;
-- multi-user accounts or remote microphone access;
-- always-on background listening;
-- real-time diffusion/video avatar generation on the validated laptop;
-- automatic collection or upload of private audio;
-- claims of production readiness without a separate security and operational review.
+技术沿革见[七阶段开发日志](DEVELOPMENT_LOG.md)，下一步具体门槛见[Publication blockers](docs/release/PUBLICATION_BLOCKERS.md)。

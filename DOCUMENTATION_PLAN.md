@@ -1,3 +1,11 @@
+# 本地语音交互AI系统（Local Voice-Interactive AI System）— Documentation scope
+
+**Historical planning record:** current candidate scope is defined by README and docs/release/PUBLICATION_BLOCKERS.md. This old plan is not a current audit result or an instruction to start the incomplete package.
+
+当前文档已经同步Windows Rebuild，源码静态迁入但发布/构建/独立恢复仍受门槛约束，见[README](README.md)与[发布阻塞](docs/release/PUBLICATION_BLOCKERS.md)。以下旧版文档计划保留作历史资料，不是当前运行指南；其v0.9.1标识不改写为新软件发布。
+
+---
+
 # Documentation Plan — Recruitment Preview v0.9
 
 Status: Documentation Revision v0.9.1  
@@ -71,4 +79,3 @@ The documents must not describe Development-only or future work as a completed D
 - Run link checking after the repository layout is finalized.
 - Run secret, path, log, audio, model-weight, and large-file scans before the first commit.
 - Verify that the public clone passes frontend lint/build and the documented health-check sequence.
-

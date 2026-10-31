@@ -1,7 +1,7 @@
 import type { ConnectionState, WsEvent } from "./types";
 import { isWsEvent } from "./types";
 
-export const I0_WEBSOCKET_URL = process.env.LVIAI_WS_URL ?? "ws://127.0.0.1:8767";
+export const I0_WEBSOCKET_URL = "ws://127.0.0.1:8767";
 
 export interface VoiceSocketCallbacks {
   onConnectionState: (state: ConnectionState) => void;
@@ -28,15 +28,15 @@ export class VoiceSocket {
         return;
       }
       if (typeof message.data !== "string") {
-        callbacks.onError("收到不支持的 WebSocket 消息类型。");
+        callbacks.onError("Received an unsupported I0 WebSocket message type");
         return;
       }
       try {
         const parsed: unknown = JSON.parse(message.data);
-        if (!isWsEvent(parsed)) throw new Error("收到格式无效的 WebSocket 事件。");
+        if (!isWsEvent(parsed)) throw new Error("Received an invalid I0 event");
         callbacks.onEvent(parsed);
       } catch (error) {
-        callbacks.onError(error instanceof Error ? error.message : "无法读取 WebSocket 事件。");
+        callbacks.onError(error instanceof Error ? error.message : "Unable to read I0 event");
       }
     };
     socket.onerror = () => callbacks.onError("无法连接本机语音服务。");
@@ -46,7 +46,10 @@ export class VoiceSocket {
     };
   }
 
-  sendStart(maxTurns: number): void { this.send({ type: "start", max_turns: maxTurns }); }
+  sendStart(options: Record<string, unknown> = {}): void { this.send({ type: "start", ...options }); }
+  sendAvatarFeedback(kind: "started" | "estimated_finished" | "cancelled" | "error", turn: { turn_id: number; audio_id: string; sessionid: string; bridge_turn_id: string; generation?: number }): void {
+    this.send({ type: `avatar_playback_${kind}`, ...turn, completion_semantics: "bounded_media_estimate", code: "playback_start_failed" });
+  }
   sendStop(): void { this.send({ type: "stop" }); }
   sendBrowserPlaybackStarted(turnId: number, audioId: string): void {
     this.send({ type: "browser_playback_started", turn_id: turnId, audio_id: audioId });

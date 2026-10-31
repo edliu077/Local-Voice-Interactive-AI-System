@@ -1,177 +1,53 @@
-# Local Voice-Interactive AI System
+# 本地语音交互AI系统（Local Voice-Interactive AI System）
 
 [简体中文](README.zh-CN.md)
 
-A Windows-first, locally orchestrated voice-interaction demo that connects voice activity detection, speech recognition, a local language model, voice-cloning TTS, browser audio, and a Live2D character in one controlled real-time pipeline.
+A native-Windows, local, half-duplex voice interaction project combining speech recognition, a CPU language model, cloned-voice synthesis and an audio-driven video avatar.
 
-This repository is prepared as a **Recruitment Preview v0.9**. It focuses on the engineering decisions, integration work, validation process, and resource trade-offs behind a working local demo. It is not presented as a production service or a general-purpose desktop assistant.
+**Baseline: Windows Functional Stable Candidate v1.0-rc1 — Known Quality Issues.** Q-001 (STT accuracy/completeness) and Q-002 (repetitive replies) remain **OPEN**. This is not a final release or a claim of complete conversational quality.
 
-## Demo
+## Repository status
 
-- **60–90 second recruitment demo:** coming before public release
-- **Sanitized screenshots:** pending final capture
+This checkout is a **Windows Rebuild public integration-source candidate, not an out-of-the-box complete runtime package**. It retains first-party orchestration, safety managers, speech interfaces, frontend and technical history. The entire LiveTalking vendor tree is absent, including all CONDITIONAL/BLOCKED files and its three locally added files. READY vendor files are also omitted; no partial runtime or vendor patch is distributed.
 
-No video, GIF, screenshot, or repository link is published here yet. Public display authorization has been confirmed for the current tested Live2D character and approved generated cloned-voice media. Final captures must still be reviewed for private reference material, transcripts, local paths, and accidental inclusion of source assets. Media authorization does not permit redistribution of the Live2D model files or private voice-reference material.
+Stage 2C-1 in the full migration checkout recorded zero full/production npm audit package groups and passing ESLint, TypeScript and Webpack checks. Identical dependency files are preserved here; **this candidate has not been installed, built or run**. Original local-system acceptance does not validate this distribution. See [external integration](docs/third-party/EXTERNAL_LIVETALKING.md), [publication gates](docs/release/PUBLICATION_BLOCKERS.md) and [candidate file list](docs/release/PUBLICATION_FILE_LIST.md).
 
-## Demo Stable status
+The original local development system has passed user-operated functional conversations, including the accepted eight-turn flow, first-click connection, manual ending, avatar playback, browser WAV fallback and safe shutdown. Those results do not transfer automatically to a public clone. Long-term stability and complete independent recovery remain unverified. The working source also includes a default-off STT evidence patch added after the frozen archive; it is not byte-identical to the rc1 ZIP.
 
-The current Demo Stable build has passed manual 1-turn, 2-turn, and 6-turn regression on the target machine. Its validated path includes:
+## Current architecture
 
-- Silero VAD → Faster-Whisper `small` CPU `int8` → Qwen3-1.7B GGUF/llama.cpp CPU → Qwen3-TTS 0.6B Base GPU;
-- local WebSocket orchestration, Browser Web Audio, playback acknowledgement, and half-duplex anti-self-listening control;
-- Live2D rendering with RMS-driven lip sync from the audio actually played;
-- a production frontend built with `next build --webpack` and served with `next start`;
-- finalized project identity, persona wording, and recruitment-oriented UI copy;
-- unified Windows startup/shutdown with stale-PID recovery, listener-PID reconciliation, and TTS readiness gating;
-- corrected production Live2D client configuration using browser-safe `NEXT_PUBLIC_LVIAI_*` URLs, followed by a final 1-turn speech smoke test.
+| Service | Local port | Implementation |
+| --- | ---: | --- |
+| Frontend | 3000 | Next.js production frontend |
+| Avatar controller | 8011 | Owned session/audio control |
+| TTS | 8765 | Qwen3-TTS 0.6B Base, CUDA voice cloning |
+| Video avatar | 8010 | LiveTalking + Wav2Lip256, 25 FPS configuration |
+| LLM | 8081 | Qwen3-1.7B Q4_K_M, llama.cpp CPU-only, 4096 context |
+| STT | 8766 | Faster-Whisper Small, CPU INT8 |
+| WebSocket / VAD | 8767 | Python orchestration + Silero VAD |
 
-These results describe the validated target environment. They do not claim broad hardware compatibility or production readiness.
+The default playback path sends final TTS audio through the avatar controller/audio bridge into LiveTalking/Wav2Lip and WebRTC. Browser WAV playback remains an advanced fallback. Listening resumes after the controlled playback lifecycle; this is not full-duplex interruption or streaming token-to-speech inference.
 
-## System overview
+## Use and recovery boundary
 
-```mermaid
-flowchart TB
-    A["Microphone + Silero VAD"] --> B["Faster-Whisper small<br/>CPU int8"]
-    B --> C["Qwen3-1.7B GGUF<br/>llama.cpp CPU"]
-    C --> D["Qwen3-TTS 0.6B Base<br/>GPU voice cloning"]
-    D --> E["WebSocket binary WAV<br/>Browser Web Audio"]
-    E --> F["Live2D + RMS lip sync<br/>Playback ACK"]
-```
+Read [Windows setup](docs/windows-setup.md), [external models/assets](docs/model-downloads.md) and [privacy](docs/privacy.md) first. Weights, binaries, environments, private reference audio/text, avatar frames and build products are not bundled. Current recorded dependency lists are not a verified clean-install recipe.
 
-The stable demo uses a local, utterance-level, half-duplex conversation loop. The orchestrator waits for speech, transcribes it, obtains a local LLM response, generates speech, transfers the WAV to the browser, and waits for browser playback acknowledgement before reopening the microphone path.
+The retained integration entry points are `Start-Rebuild.cmd` and `Stop-Rebuild.cmd`. The web address is `http://127.0.0.1:3000`. One user click connects/unlocks playback/starts a session; “结束对话” ends it, and WAV fallback is in advanced settings. These are baseline behaviors, **not instructions to start this incomplete checkout now; an unmodified upstream checkout does not restore the excluded local changes**. Resource and process ownership checks must remain intact.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for component responsibilities, ports, state transitions, and failure boundaries.
+## Seven Development Phases
 
-## Why this project matters
+1. **Phase 1 — Environment and Model Validation:** native Windows feasibility and independent STT/TTS/LLM validation.
+2. **Phase 2 — Voice Interaction Pipeline:** VAD, persistent services, explicit audio ownership and half-duplex turns.
+3. **Phase 3 — Early Digital Avatar Integration:** WebSocket, Next.js, Browser Audio, Live2D and RMS lip sync.
+4. **Phase 4 — Demo Stable Validation:** production frontend, 1/2/6-turn functional acceptance, launcher and source-package review.
+5. **Phase 5 — Windows Rebuild Architecture Decision:** preserve the successful baseline while choosing an audio-driven video avatar route.
+6. **Phase 6 — Windows Rebuild Implementation:** external TTS bridge, WebRTC, seven-service management and product interaction cleanup.
+7. **Phase 7 — Functional Acceptance and Quality Investigation:** rc1 functional freeze, bounded evidence collection and OPEN STT/LLM issues.
 
-The project was built to explore a practical question: how can a multimodal conversational experience remain responsive and understandable on consumer laptop hardware without turning the system into a collection of unstable, competing GPU workloads?
+See the [complete development log](DEVELOPMENT_LOG.md), [historical Demo Stable](docs/legacy/demo-stable/README.md), and [Why Windows Rebuild](docs/architecture/WHY_WINDOWS_REBUILD.md). The seven original Git commits and their dates remain unchanged. Demo Stable v0.9 was a successful functional baseline; v0.9.1 is a documentation revision, not an invented release Tag.
 
-The main work was not training a new foundation model. It was local AI systems engineering:
+## Documentation and rights
 
-- separating CPU and GPU workloads;
-- validating each model independently before integration;
-- keeping services on loopback interfaces;
-- building an explicit browser-audio acknowledgement protocol;
-- preventing self-listening in a microphone/speaker loop;
-- driving lip sync from the final playback signal instead of an estimated text animation;
-- preserving validated fallback stages while adding new components.
+[Architecture](ARCHITECTURE.md) · [Validation](docs/validation.md) · [Known issues](KNOWN_ISSUES.md) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md)
 
-## My Contribution
-
-I designed and integrated the project as an end-to-end local AI system rather than treating it as a collection of disconnected model demos. My work included:
-
-- designing the end-to-end architecture and defining clear service boundaries;
-- allocating CPU and GPU workloads around an RTX 4060 Laptop 8 GB / 16 GB RAM constraint;
-- integrating local VAD, STT, llama.cpp/Qwen3-1.7B, and Qwen3-TTS services;
-- implementing the WebSocket orchestration and event/state flow between Python services and the browser;
-- designing Browser Web Audio delivery with explicit playback-started and playback-finished acknowledgements;
-- enforcing half-duplex control so listening resumes only after assistant playback, preventing self-listening;
-- integrating Live2D in the production frontend;
-- driving lip sync from the RMS level of the final browser playback signal;
-- using staged validation and preserved fallback baselines to isolate failures safely;
-- debugging cross-component runtime issues, including the development-server OOM, and hardening the Demo Stable packaging and release boundary.
-
-The project demonstrates architecture, integration, resource scheduling, debugging, and stability validation. It does not claim that I trained the underlying foundation models.
-
-## Technical decisions and design trade-offs
-
-### CPU/GPU allocation
-
-The target machine has an NVIDIA RTX 4060 Laptop GPU with 8 GB VRAM and 16 GB system RAM. The stable allocation is deliberately asymmetric:
-
-- VAD: CPU
-- STT: CPU `int8`
-- Local LLM: CPU-only llama.cpp (`-ngl 0`)
-- TTS: GPU
-- Live2D rendering and audio analysis: browser
-
-This keeps the GPU available for the workload that benefited most from it in the validated chain: local Qwen3-TTS voice synthesis.
-
-### Why Live2D instead of a heavier generative avatar pipeline
-
-Early planning considered heavier real-time character-generation and driving approaches. They were not selected for the stable demo. On an RTX 4060 Laptop GPU with 8 GB VRAM and 16 GB RAM, running STT, a local LLM, TTS, and a generative avatar at the same time would add significant VRAM, memory, and latency pressure. The final design deliberately uses **Live2D + Browser Audio + RMS Lip Sync** to retain visible character feedback and interaction, reduce additional generative inference load, reserve GPU capacity for local TTS, and improve end-to-end stability and responsiveness on consumer hardware.
-
-The lip-sync signal comes from the RMS level of the audio being played in the browser. It does not predict mouth movement from text and does not use a video-generation model.
-
-### Persistent services and explicit acknowledgements
-
-STT and TTS are kept in local services to avoid repeated model loading. The browser sends explicit playback-started and playback-finished acknowledgements. Listening does not resume until playback has finished, which makes the half-duplex behavior observable and testable.
-
-### Windows-first scope
-
-The stable demo targets native Windows 11. Docker and WSL are not required for the validated path. Models and private assets are loaded locally and are not bundled in the public repository.
-
-## Stable scope versus Development
-
-The public Demo Stable line is intentionally narrower than the private Development line.
-
-| Area | Demo Stable v0.9 | Development / future evaluation |
-|---|---|---|
-| Local LLM | Qwen3-1.7B GGUF | Qwen3-4B feasibility work |
-| Conversation length | Validated 1/2/6-turn modes | Bounded-context and longer-memory work |
-| Character response | Live2D + audio RMS lip sync | J1-F.2 automatic emotion-expression mapping |
-| Audio | Browser playback with ACK | Additional streaming experiments |
-| Deployment | One local Windows user | Remote, multi-user, or hosted deployment |
-
-J1-F.2, J2, and the 4B model are **not completed Demo Stable features**.
-
-## Hardware and environment
-
-Validated target:
-
-- Windows 11
-- NVIDIA RTX 4060 Laptop GPU, 8 GB VRAM
-- 16 GB system RAM
-- Local browser frontend
-- Separate Python environments for orchestration/STT and CUDA TTS
-- Node.js/npm frontend environment
-
-See [docs/windows-setup.md](docs/windows-setup.md) for the setup sequence and [docs/model-downloads.md](docs/model-downloads.md) for model placement.
-
-## Repository and asset policy
-
-The public repository is intended to contain source code, configuration templates, documentation, and sanitized test fixtures only. It does not include:
-
-- model weights;
-- llama.cpp binaries;
-- private voice-reference audio or its transcript;
-- generated or recorded runtime audio;
-- conversation logs;
-- Live2D source model assets and Cubism Core runtime;
-- the private Development repository or its experimental history.
-
-Read [docs/privacy.md](docs/privacy.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) before adding local assets.
-
-## Documentation
-
-- [Architecture](ARCHITECTURE.md)
-- [Development log](DEVELOPMENT_LOG.md)
-- [Known issues](KNOWN_ISSUES.md)
-- [Roadmap](ROADMAP.md)
-- [Third-party notices](THIRD_PARTY_NOTICES.md)
-- [Windows setup](docs/windows-setup.md)
-- [Model downloads](docs/model-downloads.md)
-- [Privacy](docs/privacy.md)
-- [Demo limitations](docs/demo-limitations.md)
-
-## Current release stage
-
-`v0.9` is in final GitHub packaging preparation. The Demo Stable runtime is frozen after 1/2/6-turn acceptance, launcher hardening, the Live2D production-configuration fix, and a final 1-turn speech smoke test.
-
-The local Git repository has been initialized and the first recruitment-preview commits have been created. Clean-clone validation has passed with `.env`, private/model/audio/binary assets excluded; `npm ci`, ESLint, TypeScript `--noEmit`, the Next.js production build, stable contract tests (4/4), and launcher hardening tests all passed in the clean local clone.
-
-External artifact revisions and checksums have been reconciled for llama.cpp, Qwen3-1.7B GGUF, Qwen3-TTS, and Faster-Whisper Small. The final tracked-tree and Git-history audit found no P0/P1 blocker to changing the repository from private to public. Silero's exact cached commit, exact PyTorch wheel hashes, and future Cubism runnable/media publication classification remain documented P2 follow-ups; screenshots and the 60–90 second demo remain release-presentation work, not source-publication blockers.
-
-## License status
-
-No open-source license is granted for the original source code or documentation in this repository. Copyright © 2026 Enhua Liu. All rights reserved.
-
-Third-party software, models, runtimes, voice materials, Live2D assets, and Cubism components remain subject to their respective licenses and terms. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for component-specific terms and unresolved verification items.
-
-## Copyright, Licensing and Usage
-
-Copyright © 2026 Enhua Liu. All rights reserved.
-
-This repository is published primarily for portfolio and recruitment review purposes. The original source code and documentation may be viewed for evaluation, but no open-source license or permission for copying, modification, redistribution, or commercial use is granted.
-
-Third-party software, models, runtimes, voice materials, Live2D assets, and Cubism components remain subject to their respective licenses and terms. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
+Copyright © 2026 Enhua Liu. All rights reserved for original source and documentation; no new open-source grant is made by this migration. Third-party code and assets retain their own terms. LiveTalking's Apache-2.0 license does not grant unrestricted rights to embedded derivatives, model weights or avatar/voice assets. See [Third-party notices](THIRD_PARTY_NOTICES.md) and the [component review](docs/release/PUBLICATION_BLOCKERS.md#third-party-component-matrix). No LiveTalking runtime tree is distributed here. Do not add unresolved source, patches, weights or demo media. Public viewing is not a new permissive project license.

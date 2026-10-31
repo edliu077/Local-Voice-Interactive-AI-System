@@ -1,81 +1,85 @@
-# Local environment and secrets
+# Local configuration and credentials
 .env
 .env.*
 !.env.example
-
-# Python environments and caches
-.venv/
+/config/rebuild.json
+/config/windows-runtime.json
+*.pem
+*.key
+# Environments, generated products and caches
+.venv*/
+**/.venv*/
 venv/
 env/
-**/.venv/
-**/venv/
-**/__pycache__/
-*.py[cod]
-.pytest_cache/
-**/.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.cache/
-pip-wheel-metadata/
-
-# Node / Next.js build products
 **/node_modules/
 **/.next/
 **/out/
 **/dist/
+**/__pycache__/
+*.py[cod]
 *.tsbuildinfo
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Downloaded model caches and weights
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+/cache/
+/archives/
+/.migration-audit/
+# All real runtime evidence, private conversations and process records
+/runtime/**
+!/runtime/.gitkeep
+/logs/
+**/logs/
+**/diagnostics/
+**/runtime/
+**/outputs/
+*.jsonl
+*.log
+*.pid
+*.tmp
+# External weights and executable distributions
 /models/*
 !/models/README.md
+/tools/*
+!/tools/README.md
 *.gguf
-*.bin
 *.safetensors
 *.onnx
 *.pt
 *.pth
 *.ckpt
-*.tflite
-*.engine
-*.weights
-
-# Downloaded tools and archives. Only the public setup placeholder is tracked.
-/tools/*
-!/tools/README.md
-
-# Runtime data, logs, generated outputs, and process markers
-/runtime/
-/logs/
-**/runtime/**
-!/runtime/
-!/runtime/.gitkeep
-**/logs/**
-**/outputs/**
-*.pid
-*.tmp
-*.log
-
-# Private voice-clone inputs and provenance-unverified audio
-/assets/voice-clone/
-/assets/voice/*
-!/assets/voice/README.md
+*.bin
+*.npz
+*.pkl
+*.pickle
+*.exe
+*.dll
+*.whl
+*.zip
+*.7z
+*.tar
+*.gz
+# Voice inputs, references, generated media and all unapproved visual assets
 *.wav
 *.mp3
 *.flac
 *.ogg
 *.m4a
-
-# Live2D models and Cubism runtime are quarantined until redistribution terms
-# are verified. A future public README may be added without exposing assets.
-/assets/live2d/*
-!/assets/live2d/README.md
+*.mp4
+*.webm
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.moc3
+/assets/voice-clone/**
+/assets/avatar/**
 /frontend/public/live2d/**
 !/frontend/public/live2d/README.md
-
+/third_party/LiveTalking/data/**
+/third_party/LiveTalking/models/**
+/third_party/LiveTalking/**/.git/
 # Editor and operating-system metadata
 .DS_Store
 Thumbs.db
@@ -84,3 +88,11 @@ Desktop.ini
 .vscode/
 *.swp
 *.swo
+
+# Explicit source-only asset preparation notices
+!/assets/avatar/README.md
+!/assets/voice-clone/README.md
+
+# Publication candidate review evidence and unresolved external vendor payload
+/.publication-audit/
+/third_party/LiveTalking/

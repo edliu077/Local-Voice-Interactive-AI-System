@@ -1,164 +1,49 @@
-# 本地语音交互AI系统
+# 本地语音交互AI系统（Local Voice-Interactive AI System）
+
+> **这是Windows Rebuild的公开集成源码候选，不是开箱即用的完整运行包。** 保留第一方管理器、接口、前端与阶段式文档；完整LiveTalking vendor树、全部CONDITIONAL/BLOCKED文件、三个待确认本地新增及修改补丁均未分发。READY文件也未组成半套运行树。取得未修改上游不能恢复所需的11项改动和3项新增。
+>
+> 原本地系统的八轮等人工功能事实保留，不能转移为本候选验收。Stage2C1在完整迁移副本完成的前端安全/构建检查仅为既有证据；本候选未安装、构建或运行。Q-001/Q-002 OPEN，长期稳定和独立恢复未验收。见[完整文件清单](docs/release/PUBLICATION_FILE_LIST.md)、[外部集成边界](docs/third-party/EXTERNAL_LIVETALKING.md)与[发布门槛](docs/release/PUBLICATION_BLOCKERS.md)。
 
 [English](README.md)
 
-这是一个面向 Windows 本机环境的语音交互 Demo，将语音活动检测、语音识别、本地大语言模型、声音克隆 TTS、浏览器音频和 Live2D 角色整合为一条可控的实时交互链路。
+本项目在原生Windows本机连接语音检测、识别、语言模型、声音克隆和音频驱动视频数字人，面向单用户半双工交互，不是公网多用户服务。
 
-本仓库定位为 **GitHub Recruitment Preview v0.9**，重点展示系统设计、组件集成、验证过程和资源取舍。它不是生产服务，也不应被描述为通用桌面助手。
+**冻结基线：Windows Functional Stable Candidate v1.0-rc1 — Known Quality Issues。Q-001、Q-002均为OPEN。** 功能流程通过不等于完整对话质量、长期稳定性或独立恢复通过。
 
-## Demo
+## 当前迁移状态
 
-- **60–90 秒招聘展示视频：** 正式公开前补充
-- **脱敏截图：** 等待最终拍摄与审核
+Windows Rebuild是当前目标架构和开发阶段名称，不是新的正式项目名。公开候选只携带许可白名单中的第一方工程与说明。Stage2C1在完整迁移副本已通过前端安全/静态构建检查；本候选未安装、构建、七服务运行或独立恢复。完整运行包的授权和恢复仍BLOCKED，详见[当前门槛](docs/release/PUBLICATION_BLOCKERS.md)。
 
-当前不虚构任何视频、GIF、截图或仓库链接。当前 tested Live2D character 和已批准的 generated cloned-voice media 已确认可用于公开展示。最终素材仍须检查私人参考材料、转录文本、本机路径以及是否意外包含源资产；媒体展示授权不等于 Live2D 原始模型文件或私人声音参考材料的再分发授权。
+原本地开发系统已有七服务联启、首次点击、数字人连续8轮流程、主动结束、WAV回退及安全关闭人工功能反馈；不能将这些直接写成公开克隆已经运行成功。当前工作源码含冻结后默认关闭的STT取证补丁，不等于冻结ZIP原件。
 
-## Demo Stable 当前状态
+## 七服务与语音链
 
-最终 Demo Stable 已在目标电脑上通过 1 轮、2 轮和 6 轮人工回归。已验证的稳定链路包括：
+| 服务 | 端口 | 当前实现 |
+| --- | ---: | --- |
+| 前端 | 3000 | Next.js生产前端 |
+| Avatar控制器 | 8011 | 本地会话、音频提交和播放控制 |
+| TTS | 8765 | Qwen3-TTS 0.6B Base CUDA声音克隆 |
+| 视频数字人 | 8010 | LiveTalking + Wav2Lip256，25FPS配置 |
+| LLM | 8081 | Qwen3-1.7B Q4_K_M、llama.cpp CPU-only、4096上下文 |
+| STT | 8766 | Faster-Whisper Small CPU INT8 |
+| WebSocket/VAD | 8767 | Python编排及Silero VAD |
 
-- Silero VAD → Faster-Whisper `small` CPU `int8` → Qwen3-1.7B GGUF/llama.cpp CPU → Qwen3-TTS 0.6B Base GPU；
-- 本机 WebSocket 编排、Browser Web Audio、播放 ACK 和 half-duplex 防自听控制；
-- Live2D 与基于最终播放音频 RMS 的实时口型；
-- 使用 `next build --webpack` 构建、`next start` 运行的 Production Frontend；
-- 已完成的正式项目命名、Persona 文案和招聘展示 UI 文案。
+默认路径是VAD→STT→1.7B→TTS→Avatar音频桥→LiveTalking/Wav2Lip→WebRTC。浏览器WAV备用播放保留在高级设置。系统控制听说顺序，普通会话不因六轮自动结束，历史仍有界；不代表无限记忆、全双工打断或流式逐token合成。
 
-这些结论仅对应已验证的目标环境，不代表广泛硬件兼容性或生产级成熟度。
+## 使用前提
 
-## 系统链路
+先读[Windows准备与恢复说明](docs/windows-setup.md)、[模型/素材](docs/model-downloads.md)及[隐私](docs/privacy.md)。本仓库不含权重、二进制、三套Python环境、参考声音/文本、Avatar帧和前端生产构建，不能克隆后直接启动。
 
-```mermaid
-flowchart TB
-    A["麦克风 + Silero VAD"] --> B["Faster-Whisper small<br/>CPU int8"]
-    B --> C["Qwen3-1.7B GGUF<br/>llama.cpp CPU"]
-    C --> D["Qwen3-TTS 0.6B Base<br/>GPU 声音克隆"]
-    D --> E["WebSocket 二进制 WAV<br/>Browser Web Audio"]
-    E --> F["Live2D + RMS 口型<br/>Playback ACK"]
-```
+完成全部门槛和合法本地准备后，正式入口为`Start-Rebuild.cmd`与`Stop-Rebuild.cmd`，页面为`http://127.0.0.1:3000`。用户点击一次“连接并开始对话”完成连接和音频解锁，点击“结束对话”停止会话。这是原基线的操作方式，不是授权本轮运行不完整副本；必须保留资源预检、持续监护和严格进程归属。
 
-稳定版采用本机、逐句、半双工对话流程：VAD 完成截句后进行转录，本地 LLM 生成回复，TTS 合成语音，WebSocket 将 WAV 发送给浏览器；浏览器确认播放完成后，系统才恢复下一轮监听。
+## 历史与贡献
 
-详细组件、端口和状态流转见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+早期Demo Stable已实现本地语音链、Live2D/Browser Audio/RMS、ACK及1/2/6轮功能验证，是后续工作的有效基线。新路线改变数字人呈现和传输职责，复用既有组件和工程经验；不以贬低旧版解释重构。
 
-## 项目重点
+[七阶段开发日志](DEVELOPMENT_LOG.md)同时覆盖环境/模型、语音链、早期数字人、Demo Stable验证、Rebuild决策、实现及质量调查。[旧版说明](docs/legacy/demo-stable/README.md)与[重构原因](docs/architecture/WHY_WINDOWS_REBUILD.md)保留技术事实；原七次Git提交和时间不变，v0.9.1仅按已确认的文档修订定位说明。
 
-**项目核心价值是本地 AI 系统的架构设计、组件集成、资源调度和稳定性验证，而不是训练新的基础模型。** 具体工作包括：
+## 已知问题与发布边界
 
-- 按照资源特点分配 CPU/GPU；
-- 每个组件先独立验证，再逐步接入完整链路；
-- 所有服务只绑定回环地址；
-- 建立浏览器音频 ACK 协议；
-- 在扬声器与麦克风同时存在的情况下实现 half-duplex 防自听；
-- 使用最终播放音频驱动真实 RMS 口型；
-- 增加新功能时保留已验证的回退基线。
+Q-001：个别漏识别/替换有原声确认，早前多轮恶化根因未知。Q-002：历史存在重试后仍重复；后来六轮未复现且未触发重试，不能宣布解决。长期稳定性、完整异常恢复和独立重建未完成。详见[已知问题](KNOWN_ISSUES.md)和[验收分层](docs/validation.md)。
 
-## 我的贡献
-
-我把这个项目作为一套端到端本地 AI 系统进行设计与集成，而不是把几个模型演示简单拼接在一起。我的实际工作包括：
-
-- 设计端到端架构并划分各本机服务的职责边界；
-- 围绕 RTX 4060 Laptop 8 GB 显存、16 GB 内存进行 CPU/GPU 资源分配；
-- 集成本地 VAD、STT、llama.cpp/Qwen3-1.7B 和 Qwen3-TTS 服务；
-- 实现 Python 服务与浏览器之间的 WebSocket 编排、事件和状态流转；
-- 设计 Browser Web Audio 传输及播放开始/结束 ACK；
-- 实现 half-duplex 控制，使系统只在播放结束后恢复监听，避免 AI 听到自身输出；
-- 在 Production Frontend 中完成 Live2D 集成；
-- 使用浏览器最终播放音频的 RMS 驱动实时口型；
-- 采用分阶段验证和保留回退基线的方式安全定位问题；
-- 完成跨组件调试，包括开发服务器 OOM 的定位与修复，以及 Demo Stable 的包装和发布加固。
-
-本项目展示的是架构、集成、资源调度、调试和稳定性验证能力，并不声称由我训练了底层基础模型。
-
-## 技术决策与设计取舍
-
-### CPU/GPU 资源分配
-
-目标设备为 RTX 4060 Laptop 8 GB 显存和 16 GB 内存。稳定版采用：
-
-- VAD：CPU
-- STT：CPU `int8`
-- 本地 LLM：llama.cpp CPU-only（`-ngl 0`）
-- TTS：GPU
-- Live2D 与音频分析：浏览器
-
-这样可以把有限的 GPU 资源优先留给在当前链路中收益最明显的本地 Qwen3-TTS。
-
-### 为什么最终选择 Live2D
-
-早期曾考虑更重的实时人物生成和驱动路线，但没有将其作为稳定版方案。在 RTX 4060 Laptop 8 GB 显存、16 GB 内存的消费级硬件上，同时运行 STT、本地 LLM、TTS 和生成式数字人，会带来明显的显存、内存与延迟压力。因此最终主动采用 **Live2D + Browser Audio + RMS Lip Sync**：在保留人物反馈和交互感的同时，减少额外的生成式推理负载，把 GPU 资源优先留给本地 TTS，并提升端到端稳定性与响应性。
-
-口型直接来自浏览器最终播放音频的 RMS 音量，不是根据文字猜测，也没有使用实时视频生成模型。
-
-### 常驻服务与播放 ACK
-
-STT 和 TTS 采用本机常驻服务，避免每轮重复加载模型。浏览器显式回传开始播放与播放结束事件；只有收到结束 ACK 后，系统才恢复监听，因此 half-duplex 行为可以被观察和测试。
-
-## Demo Stable 与 Development 的边界
-
-| 模块 | Demo Stable v0.9 | Development / 后续评估 |
-|---|---|---|
-| 本地 LLM | Qwen3-1.7B GGUF | Qwen3-4B 可行性测试 |
-| 对话轮次 | 已验证 1/2/6 轮 | J2 有界上下文与更长记忆 |
-| 数字人 | Live2D + RMS 口型 | J1-F.2 自动情绪表情映射 |
-| 音频 | 浏览器播放 + ACK | 其他流式实验 |
-| 部署 | 单用户 Windows 本机 | 远程、多用户或云端部署 |
-
-**J1-F.2、J2 和 4B 不属于已经完成的 Demo Stable 功能。**
-
-## 已验证硬件环境
-
-- Windows 11
-- NVIDIA RTX 4060 Laptop GPU，8 GB 显存
-- 16 GB 内存
-- 本机浏览器前端
-- 编排/STT 与 CUDA TTS 使用相互隔离的 Python 环境
-- Node.js/npm 前端环境
-
-安装流程见 [docs/windows-setup.md](docs/windows-setup.md)，模型准备见 [docs/model-downloads.md](docs/model-downloads.md)。
-
-## 公开仓库边界
-
-公开仓库仅应包含源码、配置模板、文档和脱敏测试材料，不包含：
-
-- 模型权重；
-- llama.cpp 二进制；
-- 私人声音参考音频和文本；
-- 录音、生成语音与对话日志；
-- Live2D 原始模型资源和 Cubism Core 运行时；
-- 私有 Development 仓库和实验历史。
-
-具体隐私与资产边界见 [docs/privacy.md](docs/privacy.md) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-
-## 文档目录
-
-- [系统架构](ARCHITECTURE.md)
-- [开发记录](DEVELOPMENT_LOG.md)
-- [已知问题](KNOWN_ISSUES.md)
-- [路线图](ROADMAP.md)
-- [第三方组件说明](THIRD_PARTY_NOTICES.md)
-- [Windows 安装](docs/windows-setup.md)
-- [模型下载](docs/model-downloads.md)
-- [隐私说明](docs/privacy.md)
-- [Demo 能力边界](docs/demo-limitations.md)
-
-## 当前发布阶段
-
-`v0.9` 已进入 GitHub 最终发布包装阶段。Demo Stable 已完成 1/2/6 轮人工验收、launcher hardening、Live2D production 配置修复以及最终 1 轮语音 smoke test，并已冻结当前稳定运行版本。
-
-本地 Git 仓库已完成初始化，并已经创建 Recruitment Preview 的首批本地提交。Clean-clone 验证已经通过：`.env`、私人/模型/音频/二进制资产均被排除，`npm ci`、ESLint、TypeScript `--noEmit`、Next.js production build、稳定契约测试 4/4 和 launcher hardening tests 均在全新本地 clone 中通过。
-
-llama.cpp、Qwen3-1.7B GGUF、Qwen3-TTS 和 Faster-Whisper Small 的外部 artifact revision/checksum 已完成核对。最终 tracked-tree 与完整 Git 历史审计未发现阻止仓库由 Private 切换为 Public 的 P0/P1 问题。Silero 缓存的精确 commit、PyTorch wheel 的精确哈希，以及未来 Cubism 可运行发行物/媒体的 publication 分类继续作为 P2 跟进项；脱敏截图和 60–90 秒招聘视频属于展示完善工作，不阻止当前源码仓库公开。
-
-## 许可证状态
-
-本仓库中的原创源代码和文档目前不提供开源许可证。Copyright © 2026 Enhua Liu. All rights reserved.
-
-第三方软件、模型、运行时、声音材料、Live2D 素材和 Cubism 组件仍受其各自许可证和使用条款约束。各组件的具体条款和待确认事项见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-
-## 版权、许可与使用说明
-
-Copyright © 2026 Enhua Liu. All rights reserved.
-
-本仓库主要用于个人作品集展示与招聘评估。仓库中的原创源代码和文档可供查看与评估，但目前不提供开源许可证，也未授予复制、修改、重新分发或商业使用的许可。
-
-第三方软件、模型、运行时、声音材料、Live2D 素材和 Cubism 组件仍受其各自许可证和使用条款约束，详情请参阅 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+原创源码/文档继续Copyright © 2026 Enhua Liu，All rights reserved。第三方各有条款；顶层Apache-2.0不能覆盖全部Wav2Lip派生代码、模型、声音或人物素材。展示权不等于再分发权。[许可与阻塞](docs/release/PUBLICATION_BLOCKERS.md)核定前不发布当前第三方树或新Demo媒体。

@@ -1,10 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Live2DCharacter } from "@/components/Live2DCharacter";
+import { AvatarVideo, type AvatarVideoHandle } from "@/components/AvatarVideo";
+import type { AvatarFeedback, AvatarTurn } from "@/lib/avatar-client";
+import {
+  EXPRESSION_NAMES,
+  expressionController,
+  type DirectParameterDiagnostic,
+  type ExpressionName,
+  type ExpressionParameterSnapshot,
+  type ExpressionParameterStates,
+  type ExpressionRuntimeDiagnostic,
+} from "@/lib/expression-controller";
 import { mouthController } from "@/lib/mouth-controller";
 import { VoiceSocket } from "@/lib/websocket";
-import type { ConnectionState, ConversationEntry, VoiceState, WsEvent } from "@/lib/types";
+import type { AssistantEmotion, ConnectionState, ConversationEntry, VoiceState, WsEvent } from "@/lib/types";
 
 const STATE_LABELS: Record<VoiceState, string> = {
   IDLE: "待机",
@@ -16,11 +26,24 @@ const STATE_LABELS: Record<VoiceState, string> = {
   ERROR: "发生错误",
 };
 
+const SHOW_DEV_EXPRESSION_TESTS = false;
+
 type PendingBrowserAudio = {
   audioId: string;
   turnId: number;
   byteLength: number;
 };
+
+type PendingEmotion = {
+  turnId: number;
+  emotion: AssistantEmotion;
+};
+
+const EMOTION_TO_EXPRESSION = {
+  love: "aixin",
+  sad: "kuku",
+  excited: "xingxing",
+} as const;
 
 function textValue(data: Record<string, unknown>, key: string): string | null {
   const value = data[key];
@@ -32,37 +55,150 @@ function stateValue(data: Record<string, unknown>): VoiceState | null {
   return value && value in STATE_LABELS ? value as VoiceState : null;
 }
 
+function assistantEmotionValue(data: Record<string, unknown>): AssistantEmotion {
+  const value = textValue(data, "emotion");
+  return value === "love" || value === "sad" || value === "excited" || value === "neutral" ? value : "neutral";
+}
+
 export function VoiceConsole() {
+  const avatarRef = useRef<AvatarVideoHandle | null>(null);
+  const wsSessionRef = useRef<string | null>(null);
   const socketRef = useRef<VoiceSocket | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const activeSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const pendingBrowserAudioRef = useRef<PendingBrowserAudio | null>(null);
   const activeBrowserAudioRef = useRef<PendingBrowserAudio | null>(null);
   const browserPlaybackCancelledRef = useRef(false);
-  const playbackModeRef = useRef("winsound");
+  const pendingEmotionRef = useRef<PendingEmotion | null>(null);
+  const playbackModeRef = useRef("avatar_webrtc");
   const lipSyncFrameRef = useRef<number | null>(null);
   const [connection, setConnection] = useState<ConnectionState>("disconnected");
-  const [backendReady, setBackendReady] = useState(false);
-  const [playbackMode, setPlaybackMode] = useState("winsound");
+  const [connecting, setConnecting] = useState(false);
+  const connectingRef = useRef(false);
+  const endingRef = useRef(false);
+  const connectionEpoch = useRef(0);
+  const cancelVoiceConnect = useRef<(() => void) | null>(null);
+  const cancelPreparation = useRef<(() => void) | null>(null);
+  const [playbackMode, setPlaybackMode] = useState("avatar_webrtc");
   const [activeConversation, setActiveConversation] = useState(false);
   const [stopping, setStopping] = useState(false);
   const [voiceState, setVoiceState] = useState<VoiceState>("IDLE");
   const [currentUser, setCurrentUser] = useState("");
   const [currentAssistant, setCurrentAssistant] = useState("");
   const [history, setHistory] = useState<ConversationEntry[]>([]);
-  const [maxTurns, setMaxTurns] = useState(6);
   const [activity, setActivity] = useState("等待连接本机语音服务");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [expressionTestStatus, setExpressionTestStatus] = useState<string | null>(null);
+  const [selectedExpressionName, setSelectedExpressionName] = useState<ExpressionName | null>(null);
+  const [expressionParameterSnapshot, setExpressionParameterSnapshot] = useState<ExpressionParameterSnapshot | null>(null);
+  const [expressionParameterStates, setExpressionParameterStates] = useState<ExpressionParameterStates | null>(null);
+  const [expressionDiagnostic, setExpressionDiagnostic] = useState<ExpressionRuntimeDiagnostic | null>(null);
+  const [directParameterDiagnostic, setDirectParameterDiagnostic] = useState<DirectParameterDiagnostic | null>(null);
 
   useEffect(() => () => {
+    ++connectionEpoch.current;
+    cancelPreparation.current?.();
+    cancelVoiceConnect.current?.();
     browserPlaybackCancelledRef.current = true;
     stopLipSync();
+    resetExpressionLifecycle();
     activeSourceRef.current?.stop();
+    avatarRef.current?.disconnect();
     socketRef.current?.disconnect();
   }, []);
 
   function appendHistory(entry: ConversationEntry): void {
     setHistory((previous) => [...previous, entry].slice(-12));
+  }
+
+  function resetExpressionLifecycle(turnId?: number): void {
+    expressionController.reset();
+    if (turnId === undefined || pendingEmotionRef.current?.turnId === turnId) {
+      pendingEmotionRef.current = null;
+    }
+  }
+
+  function applyPendingEmotion(turnId: number): void {
+    const pending = pendingEmotionRef.current;
+    if (!pending || pending.turnId !== turnId || pending.emotion === "neutral") {
+      resetExpressionLifecycle(turnId);
+      return;
+    }
+    const expressionName = EMOTION_TO_EXPRESSION[pending.emotion];
+    void expressionController.apply(expressionName).then((applied) => {
+      if (!applied) resetExpressionLifecycle(turnId);
+    }).catch(() => {
+      resetExpressionLifecycle(turnId);
+    });
+  }
+
+  async function runDevExpressionTest(name: "neutral" | ExpressionName): Promise<void> {
+    if (name === "neutral") {
+      expressionController.reset();
+      setExpressionTestStatus("neutral reset requested");
+      setSelectedExpressionName(null);
+      setExpressionParameterSnapshot(null);
+      setExpressionParameterStates(expressionController.resetAllParameters());
+      setExpressionDiagnostic(null);
+      setDirectParameterDiagnostic(null);
+      return;
+    }
+    setSelectedExpressionName(name);
+    setExpressionTestStatus(`${name}: direct apply requested`);
+    setExpressionParameterSnapshot(expressionController.readParameter(name));
+    const applied = await expressionController.apply(name);
+    setExpressionParameterStates(expressionController.readAllParameters());
+    setExpressionDiagnostic(null);
+    setDirectParameterDiagnostic(null);
+    setExpressionTestStatus(applied ? `${name}: direct apply complete` : `${name}: direct apply failed; neutral reset requested`);
+  }
+
+  async function runNamedExpressionDiagnostic(): Promise<void> {
+    if (!selectedExpressionName) {
+      setExpressionTestStatus("select a named expression before running the named API diagnostic");
+      return;
+    }
+    setExpressionTestStatus(`${selectedExpressionName}: named API diagnostic started`);
+    const diagnostic = await expressionController.diagnose(selectedExpressionName);
+    setExpressionDiagnostic(diagnostic);
+    setExpressionParameterStates(expressionController.readAllParameters());
+    setExpressionTestStatus(diagnostic
+      ? `${selectedExpressionName}: model.expression ${diagnostic.expressionApiStatus}`
+      : `${selectedExpressionName}: named API diagnostic failed`);
+  }
+
+  function readSelectedExpressionParameter(): void {
+    if (!selectedExpressionName) return;
+    const snapshot = expressionController.readParameter(selectedExpressionName);
+    setExpressionParameterSnapshot(snapshot);
+    setExpressionParameterStates(expressionController.readAllParameters());
+    setExpressionTestStatus(snapshot ? `${selectedExpressionName}: parameter read` : `${selectedExpressionName}: parameter read failed`);
+  }
+
+  async function runDirectParameterTest(): Promise<void> {
+    if (!selectedExpressionName) {
+      setExpressionTestStatus("select a named expression before running a direct parameter test");
+      return;
+    }
+    const snapshot = expressionController.readParameter(selectedExpressionName);
+    if (!snapshot) {
+      setExpressionTestStatus(`${selectedExpressionName}: parameter read failed`);
+      return;
+    }
+    setExpressionParameterSnapshot(snapshot);
+    const diagnostic = await expressionController.setDirect(selectedExpressionName, 1);
+    setDirectParameterDiagnostic(diagnostic);
+    if (diagnostic) setExpressionParameterSnapshot(diagnostic.afterSeveralFrames);
+    setExpressionParameterStates(expressionController.readAllParameters());
+    setExpressionTestStatus(diagnostic ? `direct set requested for ${diagnostic.name}` : "direct parameter diagnostic failed");
+  }
+
+  function runDirectResetTest(): void {
+    const states = expressionController.resetAllParameters();
+    setExpressionParameterStates(states);
+    setDirectParameterDiagnostic(null);
+    setExpressionParameterSnapshot(selectedExpressionName ? states?.[selectedExpressionName] ?? null : null);
+    setExpressionTestStatus(states ? "direct reset complete" : "direct reset failed");
   }
 
   function stopLipSync(): void {
@@ -99,15 +235,22 @@ export function VoiceConsole() {
   }
 
   async function handleAudioBinary(audio: ArrayBuffer): Promise<void> {
+    if (playbackModeRef.current === "avatar_webrtc") {
+      pendingBrowserAudioRef.current = null;
+      setErrorMessage("已阻止旧WAV播放：当前使用数字人音轨。");
+      return;
+    }
     const pending = pendingBrowserAudioRef.current;
     pendingBrowserAudioRef.current = null;
     if (!pending) {
       stopLipSync();
+      resetExpressionLifecycle();
       setErrorMessage("收到未配对的音频数据。");
       return;
     }
     if (audio.byteLength !== pending.byteLength) {
       stopLipSync();
+      resetExpressionLifecycle(pending.turnId);
       sendBrowserPlaybackError(pending, "binary_size_mismatch");
       setErrorMessage("音频数据大小校验失败。");
       return;
@@ -115,14 +258,16 @@ export function VoiceConsole() {
     const context = audioContextRef.current;
     if (!context || context.state !== "running") {
       stopLipSync();
+      resetExpressionLifecycle(pending.turnId);
       sendBrowserPlaybackError(pending, "audio_context_suspended");
       setErrorMessage("浏览器音频上下文未准备好。");
       return;
     }
     try {
       const decoded = await context.decodeAudioData(audio);
-      if (browserPlaybackCancelledRef.current) {
+      if (browserPlaybackCancelledRef.current || playbackModeRef.current !== 'browser') {
         stopLipSync();
+        resetExpressionLifecycle(pending.turnId);
         socketRef.current?.sendBrowserPlaybackCancelled(pending.turnId, pending.audioId);
         return;
       }
@@ -137,6 +282,7 @@ export function VoiceConsole() {
       activeBrowserAudioRef.current = pending;
       source.onended = () => {
         stopLipSync();
+        resetExpressionLifecycle(pending.turnId);
         if (activeSourceRef.current === source) activeSourceRef.current = null;
         if (activeBrowserAudioRef.current === pending) activeBrowserAudioRef.current = null;
         if (browserPlaybackCancelledRef.current) return;
@@ -149,9 +295,10 @@ export function VoiceConsole() {
       source.start();
       startLipSync(analyser);
       socketRef.current?.sendBrowserPlaybackStarted(pending.turnId, pending.audioId);
-      setActivity("AI 正在通过浏览器扬声器说话");
+      setActivity("她正在通过浏览器扬声器说话");
     } catch {
       stopLipSync();
+      resetExpressionLifecycle(pending.turnId);
       activeSourceRef.current?.stop();
       activeSourceRef.current = null;
       sendBrowserPlaybackError(pending, "decode_failed");
@@ -163,9 +310,7 @@ export function VoiceConsole() {
     const data = event.data as Record<string, unknown>;
     switch (event.type) {
       case "session_ready":
-        setBackendReady(true);
-        playbackModeRef.current = textValue(data, "playback_mode") ?? "winsound";
-        setPlaybackMode(playbackModeRef.current);
+        wsSessionRef.current = event.session_id;
         setErrorMessage(null);
         setActivity("本机语音服务已准备好");
         break;
@@ -173,6 +318,7 @@ export function VoiceConsole() {
         const nextState = stateValue(data);
         if (nextState) {
           setVoiceState(nextState);
+          if (nextState === "LISTENING") resetExpressionLifecycle();
         }
         break;
       }
@@ -193,12 +339,20 @@ export function VoiceConsole() {
       case "assistant_text": {
         const text = textValue(data, "text");
         if (text) {
+          pendingEmotionRef.current = { turnId: event.turn_id, emotion: assistantEmotionValue(data) };
           setCurrentAssistant(text);
           appendHistory({ role: "assistant", text, turnId: event.turn_id });
         }
         break;
       }
       case "audio_ready": {
+        if (data.transport === "avatar_webrtc") {
+          if (playbackModeRef.current !== "avatar_webrtc") { setErrorMessage("播放模式不匹配，已拒绝数字人音轨。"); avatarRef.current?.disconnect(); break; }
+          avatarRef.current?.prepare(data as unknown as AvatarTurn);
+          setActivity("数字人音频已提交，等待播放器流程");
+          break;
+        }
+        if (playbackModeRef.current === "avatar_webrtc") { pendingBrowserAudioRef.current = null; setErrorMessage("已阻止当前轮次的旧音频通道。"); break; }
         const duration = data.duration_seconds;
         if (data.transport === "websocket_binary") {
           const audioId = textValue(data, "audio_id");
@@ -214,20 +368,28 @@ export function VoiceConsole() {
         }
         break;
       }
+      case "avatar_audio_pending":
+        if (playbackModeRef.current === "avatar_webrtc") avatarRef.current?.prepare(data as unknown as AvatarTurn);
+        break;
       case "playback_started":
-        setActivity(playbackModeRef.current === "browser" ? "AI 正在通过浏览器扬声器说话" : "AI 正在通过本机扬声器说话");
+        applyPendingEmotion(event.turn_id);
+        setActivity(playbackModeRef.current === "browser" ? "她正在通过浏览器扬声器说话" : "她正在通过本机扬声器说话");
         break;
       case "playback_finished":
-        setActivity("播放完成");
+        resetExpressionLifecycle(event.turn_id);
+        setActivity(playbackModeRef.current === "avatar_webrtc" ? "本轮播放流程估计结束" : "播放完成");
         break;
       case "turn_complete":
+        resetExpressionLifecycle(event.turn_id);
         setActivity(`第 ${event.turn_id} 轮已完成`);
         break;
       case "error":
+        resetExpressionLifecycle();
         setErrorMessage(textValue(data, "message") ?? "本机语音服务发生错误。");
         setVoiceState("ERROR");
         break;
       case "session_stopped":
+        resetExpressionLifecycle();
         setActiveConversation(false);
         setStopping(false);
         setVoiceState("IDLE");
@@ -238,31 +400,59 @@ export function VoiceConsole() {
     }
   }
 
-  function connect(): void {
-    if (!socketRef.current) socketRef.current = new VoiceSocket();
-    setErrorMessage(null);
-    socketRef.current.connect({
+  function connect(): Promise<void> {
+    socketRef.current?.disconnect();
+    const socket = new VoiceSocket();
+    socketRef.current = socket;
+    return new Promise((resolve, reject) => {
+      const finish = (error?: Error) => {
+        clearTimeout(timeout);
+        if (cancelVoiceConnect.current === cancel) cancelVoiceConnect.current = null;
+        if (error) reject(error); else resolve();
+      };
+      const cancel = () => finish(new Error("连接已取消。"));
+      const timeout = setTimeout(() => finish(new Error("语音服务准备超时，请确认本机服务已就绪。")), 30000);
+      cancelVoiceConnect.current = cancel;
+      socket.connect({
       onConnectionState: (nextConnection) => {
+        if (socketRef.current !== socket) return;
         setConnection(nextConnection);
         if (nextConnection !== "connected") {
           stopLipSync();
-          setBackendReady(false);
+          resetExpressionLifecycle();
+          if (nextConnection !== "connecting") {
+            finish(new Error("语音服务连接已断开。"));
+            setActiveConversation(false); setStopping(false);
+          }
         }
       },
-      onEvent: handleEvent,
-      onAudioBinary: (audio) => { void handleAudioBinary(audio); },
+      onEvent: (event) => {
+        if (socketRef.current !== socket) return;
+        handleEvent(event);
+        if (event.type === "session_ready") finish();
+      },
+      onAudioBinary: (audio) => { if (socketRef.current === socket) void handleAudioBinary(audio); },
       onError: (message) => {
+        if (socketRef.current !== socket) return;
+        resetExpressionLifecycle();
         setErrorMessage(message);
         setConnection("error");
+        finish(new Error(message));
       },
+    });
     });
   }
 
   function disconnect(): void {
+    endingRef.current = true;
+    ++connectionEpoch.current;
+    cancelPreparation.current?.();
+    cancelVoiceConnect.current?.();
+    avatarRef.current?.disconnect();
     stopLipSync();
+    resetExpressionLifecycle();
     socketRef.current?.disconnect();
     setConnection("disconnected");
-    setBackendReady(false);
     setActiveConversation(false);
     setStopping(false);
     setVoiceState("IDLE");
@@ -270,28 +460,61 @@ export function VoiceConsole() {
   }
 
   async function startConversation(): Promise<void> {
+    if (connectingRef.current || activeConversation) return;
+    connectingRef.current = true; setConnecting(true);
+    const epoch = ++connectionEpoch.current;
+    let rejectPreparation!: (error: Error) => void;
+    const cancelled = new Promise<never>((_, reject) => { rejectPreparation = reject; });
+    cancelPreparation.current = () => rejectPreparation(new Error("连接已取消。"));
+    const preparationTimeout = setTimeout(() => rejectPreparation(new Error("连接准备超时，请确认本机服务就绪后重试。")), 180000);
+    const waitFor = <T,>(operation: Promise<T>) => Promise.race([operation, cancelled]);
+    const ensureCurrent = () => { if (epoch !== connectionEpoch.current) throw new Error("连接已取消。"); };
     try {
+      endingRef.current = false;
+      setErrorMessage(null); setActivity("正在连接，请稍候…");
       browserPlaybackCancelledRef.current = false;
-      if (playbackMode === "browser") {
-        const context = audioContextRef.current ?? new AudioContext();
-        audioContextRef.current = context;
-        await context.resume();
-        if (context.state !== "running") throw new Error("AudioContext is not running");
+      const context = audioContextRef.current ?? new AudioContext();
+      audioContextRef.current = context;
+      // Both calls happen during this click, before any awaited network work.
+      const audioReady = context.resume();
+      const avatar = avatarRef.current;
+      avatar?.disconnect();
+      const soundReady = playbackMode === "avatar_webrtc"
+        ? (avatar ? avatar.unlockSound(context) : Promise.reject(new Error("播放器尚未准备好。")))
+        : Promise.resolve();
+      await waitFor(Promise.all([audioReady, soundReady])); ensureCurrent();
+      if (context.state !== "running") throw new Error("请允许浏览器播放声音后重新连接。");
+      if (playbackMode === "avatar_webrtc") {
+        await waitFor(avatar!.connect()); ensureCurrent();
       }
-      socketRef.current?.sendStart(maxTurns);
+      await waitFor(connect()); ensureCurrent();
+      const binding = playbackMode === "avatar_webrtc" ? avatar?.binding() : null;
+      if (playbackMode === "avatar_webrtc" && (!binding || !avatar?.readyForSpeech())) throw new Error("数字人尚未准备好，请重新连接。");
+      socketRef.current!.sendStart({ playback_mode: playbackMode, avatar_binding: binding });
       setActiveConversation(true);
       setStopping(false);
       setErrorMessage(null);
-      setActivity("已请求开始对话，等待本机状态事件");
+      setActivity("已连接，正在准备聆听");
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "无法开始对话。");
+      if (epoch === connectionEpoch.current) {
+        disconnect();
+        setErrorMessage(error instanceof Error ? error.message : "无法开始对话。");
+      }
+    } finally {
+      clearTimeout(preparationTimeout); cancelPreparation.current = null;
+      connectingRef.current = false; setConnecting(false);
     }
   }
 
   function stopConversation(): void {
+    if (connectingRef.current) { disconnect(); return; }
+    if (endingRef.current) return;
+    endingRef.current = true;
     try {
+      if (playbackModeRef.current === "avatar_webrtc") avatarRef.current?.disconnect();
       browserPlaybackCancelledRef.current = true;
       stopLipSync();
+      resetExpressionLifecycle();
       const pending = pendingBrowserAudioRef.current;
       const active = activeBrowserAudioRef.current;
       pendingBrowserAudioRef.current = null;
@@ -310,28 +533,46 @@ export function VoiceConsole() {
     }
   }
 
-  const canStart = connection === "connected" && backendReady && !activeConversation;
-  const canStop = connection === "connected" && activeConversation && !stopping;
+  const canStart = !connecting && !activeConversation && !stopping;
+  const canStop = connecting || (connection === "connected" && activeConversation && !stopping);
+
+  function avatarFeedback(kind: AvatarFeedback, turn: AvatarTurn): void {
+    if (turn.ws_session_id.startsWith("preview-")) {
+      setVoiceState(kind === "started" ? "SPEAKING" : "IDLE");
+      setActivity(kind === "estimated_finished" ? "短句播放流程估计结束" : kind === "started" ? "数字人音轨正在进入播放器" : "短句播放已停止");
+      return;
+    }
+    if (playbackModeRef.current !== "avatar_webrtc" || turn.ws_session_id !== wsSessionRef.current) return;
+    try { socketRef.current?.sendAvatarFeedback(kind, turn); }
+    catch { setErrorMessage("对话连接已断开，数字人播放状态未送达。"); }
+  }
+
+  function changePlaybackMode(mode: string): void {
+    browserPlaybackCancelledRef.current = true;
+    activeSourceRef.current?.stop(); activeSourceRef.current = null;
+    pendingBrowserAudioRef.current = null; activeBrowserAudioRef.current = null;
+    avatarRef.current?.disconnect();
+    playbackModeRef.current = mode; setPlaybackMode(mode);
+  }
 
   return (
     <main className="shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Local Voice-Interactive AI System</p>
-          <h1>本地语音交互AI系统</h1>
+          <p className="eyebrow">Local voice companion</p>
+          <h1>赛博女友</h1>
         </div>
         <span className={`connection ${connection}`}>连接状态：{connection === "connected" ? "已连接" : connection === "connecting" ? "正在连接" : connection === "error" ? "连接错误" : "未连接"}</span>
       </header>
 
-      <section id="live2d-stage" className="stage" aria-label="Live2D interaction stage">
-        <div className="placeholder">Live2D Interaction</div>
-        <Live2DCharacter />
+      <section id="avatar-stage" className="stage" aria-label="数字人展示区域">
+        <AvatarVideo ref={avatarRef} enabled={playbackMode === 'avatar_webrtc'} onDisconnected={() => { if (activeConversation && !endingRef.current) { endingRef.current = true; try { socketRef.current?.sendStop(); setStopping(true); } catch { setActiveConversation(false); } } }} onFeedback={avatarFeedback} />
       </section>
 
       <section className="console" aria-live="polite">
         <div className="console-header">
           <div>
-            <span className="state-label">系统状态</span>
+            <span className="state-label">她的状态</span>
             <strong className="state-value">{STATE_LABELS[voiceState]}</strong>
           </div>
           <span className="activity">{activity}</span>
@@ -339,32 +580,64 @@ export function VoiceConsole() {
 
         <div className="subtitle-grid">
           <article className="subtitle"><span className="speaker">你</span><p>{currentUser || "等待你的声音…"}</p></article>
-          <article className="subtitle assistant"><span className="speaker">AI</span><p>{currentAssistant || "AI 助手已就绪。"}</p></article>
+          <article className="subtitle assistant"><span className="speaker">她</span><p>{currentAssistant || "我在这里。"}</p></article>
         </div>
 
         <div className="controls">
           <div className="button-group">
-            {connection === "connected" || connection === "connecting" ? (
-              <button type="button" onClick={disconnect}>断开连接</button>
-            ) : (
-              <button type="button" onClick={connect}>{connection === "error" ? "重新连接" : "连接"}</button>
-            )}
-            <button className="primary" type="button" onClick={startConversation} disabled={!canStart}>开始对话</button>
+            <button className="primary" type="button" onClick={() => { void startConversation(); }} disabled={!canStart}>{connecting ? "正在连接…" : activeConversation ? "对话中" : "连接并开始对话"}</button>
             <button className="danger" type="button" onClick={stopConversation} disabled={!canStop}>结束对话</button>
           </div>
-          <label className="turn-select">轮数
-            <select value={maxTurns} onChange={(event) => setMaxTurns(Number(event.target.value))} disabled={activeConversation}>
-              <option value={1}>1</option><option value={2}>2</option><option value={6}>6</option>
-            </select>
-          </label>
+          <details className="advanced-settings"><summary>高级设置</summary>
+            <label>备用播放方式
+              <select value={playbackMode} onChange={(event) => changePlaybackMode(event.target.value)} disabled={activeConversation || connecting}>
+                <option value="avatar_webrtc">数字人音轨</option><option value="browser">浏览器WAV回退</option>
+              </select>
+            </label>
+            <p>默认使用数字人声音。切换播放方式前请先结束对话。</p>
+          </details>
         </div>
+        {SHOW_DEV_EXPRESSION_TESTS ? (
+          <section aria-label="Development-only Live2D expression smoke test">
+            <p>DEV ONLY: Live2D expression smoke test</p>
+            <div className="button-group">
+              <button type="button" onClick={() => { void runDevExpressionTest("neutral"); }}>neutral</button>
+              {EXPRESSION_NAMES.map((name) => (
+                <button key={name} type="button" onClick={() => { void runDevExpressionTest(name); }}>{name}</button>
+              ))}
+            </div>
+            {expressionTestStatus ? <p className="activity">{expressionTestStatus}</p> : null}
+            {selectedExpressionName ? (
+              <div>
+                <p>Selected: {selectedExpressionName}</p>
+                <div className="button-group">
+                  <button type="button" onClick={readSelectedExpressionParameter}>READ PARAM</button>
+                  <button type="button" onClick={() => { void runDirectParameterTest(); }}>DIRECT PARAM TEST</button>
+                  <button type="button" onClick={runDirectResetTest}>RESET DIRECT TEST</button>
+                  <button type="button" onClick={() => { void runNamedExpressionDiagnostic(); }}>NAMED API DIAGNOSTIC</button>
+                </div>
+                {expressionParameterSnapshot ? <p>index={expressionParameterSnapshot.index}; range={expressionParameterSnapshot.minimum}..{expressionParameterSnapshot.maximum}; default={expressionParameterSnapshot.defaultValue}; current={expressionParameterSnapshot.value}</p> : null}
+              </div>
+            ) : null}
+            {expressionDiagnostic ? (
+              <div>
+                <p>expression API: {expressionDiagnostic.expressionApiStatus}</p>
+                <p>before={expressionDiagnostic.before.value}; after 1 frame={expressionDiagnostic.afterFirstFrame.value}; after 5 frames={expressionDiagnostic.afterSeveralFrames.value}</p>
+              </div>
+            ) : null}
+            {directParameterDiagnostic ? (
+              <p>direct {directParameterDiagnostic.name}: requested={directParameterDiagnostic.requestedValue}; before={directParameterDiagnostic.before.value}; after reset={directParameterDiagnostic.afterReset.value}; after immediate={directParameterDiagnostic.afterImmediate.value}; after 1 frame={directParameterDiagnostic.afterFirstFrame.value}; after 5 frames={directParameterDiagnostic.afterSeveralFrames.value}</p>
+            ) : null}
+            {expressionParameterStates ? <p>Expression params: {EXPRESSION_NAMES.map((name) => `${name}=${expressionParameterStates[name].value}`).join("; ")}</p> : null}
+          </section>
+        ) : null}
         {errorMessage ? <p className="error-message">{errorMessage}</p> : null}
 
         <section className="history">
           <h2>本次对话</h2>
           <div className="history-list">
             {history.length === 0 ? <p className="activity">连接后，字幕会在这里保留本次会话内容。</p> : history.map((entry, index) => (
-              <article className="history-item" key={`${entry.turnId}-${entry.role}-${index}`}><span>{entry.role === "user" ? "你" : "AI"}</span><p>{entry.text}</p></article>
+              <article className="history-item" key={`${entry.turnId}-${entry.role}-${index}`}><span>{entry.role === "user" ? "你" : "她"}</span><p>{entry.text}</p></article>
             ))}
           </div>
         </section>

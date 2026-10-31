@@ -1,0 +1,13 @@
+model: wav2lip
+avatar_id: cybergirlfriend_avatar_v1
+batch_size: 2
+fps: 25
+l: 10
+m: 8
+r: 10
+modelres: 256
+tts: external
+transport: webrtc
+stun: ''
+max_session: 1
+listenport: 8010

@@ -1,104 +1,33 @@
-# Known Issues and Constraints
+# 本地语音交互AI系统（Local Voice-Interactive AI System）— Known Issues
 
-This file describes limitations of Demo Stable v0.9 and release-packaging items that remain open. It is not a bug tracker for every experiment in the private Development Snapshot.
+**Stage2C3候选范围：本文保留原完整本地系统的设计及历史事实；公开候选未包含LiveTalking运行树、3项待确认新增或修改补丁，不是完整运行包。** Stage2C1依赖修补保持，但此前的build/audit结果不等于本候选运行验收。Q-001/Q-002 OPEN。见[当前发布门槛](docs/release/PUBLICATION_BLOCKERS.md)。
 
-## Platform and reproducibility
+基线：Windows Functional Stable Candidate v1.0-rc1 — Known Quality Issues。当前迁移源码含冻结后默认关闭的STT取证补丁，不是原冻结ZIP的字节副本。
 
-### Windows 11 is the only validated operating system
+## Q-001 — OPEN：STT漏识别/替换与多轮质量
 
-The stable path uses Windows-specific launch and audio behavior. macOS, Linux, WSL, Docker, and remote servers have not been validated.
+用户反馈后段转录不完整、漏字和识别错误。三句原声取证中，轻读连读处漏识别和清晰词语替换已有用户试听确认；另一处存在发音因素。该有限取证任务已完成，不等于Q-001解决。
 
-### Hardware coverage is narrow
+没有证明VAD提前截断；早前多轮逐渐恶化的机制仍未知。不可仅凭短转录/时长认定截断，亦不把预设句自动视为实际口述真值。
 
-The complete chain has been validated on one laptop configuration: RTX 4060 Laptop GPU with 8 GB VRAM and 16 GB RAM. Other NVIDIA GPUs, integrated graphics, CPU-only TTS, and lower-memory systems are not guaranteed.
+## Q-002 — OPEN：重复回答与重试选择
 
-### Clean-clone validation has passed
+历史12轮日志显示部分回复重试后仍高度相似/相同，完整旧候选和摘要内容不足以确定生成/上下文/选择的具体因果。后来六轮定向Trace完整、故事更具体，未复现明显重复，且未触发重试；不能说重复保护已修复或重试成功。
 
-A clean local clone was validated using the public package boundary. `.env` and private/model/audio/binary assets remained excluded. `npm ci`, ESLint, TypeScript `--noEmit`, the Next.js production build, stable contract tests (4/4), and launcher hardening tests all passed. This validates package reproducibility on the tested machine; it does not expand the supported platform or hardware scope.
+有转录污染及局部任务落实不足，但不足以据此开展无边界调参。当前保留模型、Prompt、摘要及选择机制，优先保护功能基线。
 
-## Models and startup
+## Publication and recovery — BLOCKED
 
-### Models are not bundled
+- 第三方逐组件来源/许可及声明未全部闭环；Wav2Lip权利不能由LiveTalking Apache-2.0推断。权重和素材没有再分发默认授权。
+- 前端锁审计命中已知公告，包括Next、sharp、source-map-js和开发工具链。版本命中与当前Windows调用条件可利用性必须分开；旧main锁也非当前零风险基线。见[安全矩阵](docs/release/PUBLICATION_BLOCKERS.md#frontend-security-review)。本轮未升级。
+- 三环境记录不是已验收的clean-install配方；VAD裁剪模块、wheel及外置资产准备仍有缺口。
+- 迁移副本未完整构建、运行七服务或独立恢复。Next生成类型缺失是未构建状态，不能复制.next冒充通过。
+- 部分历史检查依赖未公开的before/冻结源码，不能直接作为公共克隆的独立回归套件。
 
-VAD, STT, LLM, and TTS model artifacts must be obtained separately. The public repository should fail with a clear missing-path error instead of silently downloading large files during startup.
+## Runtime limitations
 
-### TTS cold-start readiness delay
+仅有目标Windows单机功能证据，不保证跨硬件或低资源运行。半双工，未实现语音打断；无限会话生命周期不等于无限上下文或长期记忆质量。数字人音视频曾卡顿，近期短测未明显复现不构成长期无冻结保证。
 
-Qwen3-TTS startup performs model loading, voice-clone prompt creation, and CUDA graph warm-up before the service becomes ready. During this work, `/health` may be temporarily unavailable rather than reporting a ready state. On the target machine, the first ready response has taken from tens of seconds to roughly one minute. This is an observed startup range, not a hard SLA; it can vary with cache state, driver state, background load, and hardware.
+长期稳定性、所有异常恢复、完整独立恢复未验收。回环绑定和内部归属/令牌检查不是公网生产认证；禁止公网暴露。资源不足应保留安全拒绝。
 
-Demo timing and launcher timeouts should distinguish cold-start readiness from warm per-turn latency. The unified launcher must wait for confirmed health rather than assuming that process creation means the TTS service is ready.
-
-### TTS requires the validated CUDA environment
-
-The stable TTS route has no claimed CPU fallback. CUDA wheel versions, GPU support, and model compatibility must match the documented environment.
-
-## Conversation behavior
-
-### The system is half-duplex
-
-The microphone is closed while the assistant speaks. The user cannot interrupt the response by speaking over it. This is intentional for v0.9 and prevents self-listening.
-
-### 1/2/6-turn modes are the validated interaction scope
-
-The stable claim is limited to the tested finite modes. J2 bounded context, long-term memory, and indefinite conversation behavior are not part of Demo Stable.
-
-### Local model output remains probabilistic
-
-The 1.7B model may produce short, repetitive, or less nuanced responses. The stable project demonstrates integration and interaction control, not state-of-the-art conversational quality.
-
-### Automatic emotion-expression mapping is excluded
-
-J1-F.2 work exists in Development, but Demo Stable v0.9 does not claim automatic LLM-to-Live2D expression mapping.
-
-## Audio and browser behavior
-
-### Browser playback requires an active page and user interaction
-
-Browser autoplay policies can suspend an audio context until the user interacts with the page. The UI should surface this as a recoverable playback error.
-
-### Lip sync is amplitude-based
-
-RMS lip sync follows energy in the played audio. It does not perform phoneme or viseme alignment, so mouth shapes are not linguistically exact.
-
-### Environment noise affects endpoint detection
-
-VAD behavior depends on microphone gain, room noise, speaker volume, and device selection. Thresholds validated on the target machine may require careful retesting elsewhere.
-
-## Assets and redistribution
-
-### Voice reference files are private
-
-The voice-cloning reference audio and transcript are not distributed. A user must provide an authorized local reference and accept the associated privacy and consent responsibilities.
-
-Approved generated cloned-voice media may be used in recruitment demo videos, portfolio videos, project presentations, and public demo media. This authorization does not apply to the reference WAV, transcript, derived voice prompt, voice embedding, cache, or other private source material.
-
-### Live2D source assets remain excluded
-
-The current tested Live2D character is authorized for public screenshots, GIFs, recruitment videos, project demo videos, and portfolio/recruitment presentations. Its original model files, textures, moc3, motions, expressions, and metadata remain excluded from the repository because display authorization does not grant source-asset redistribution rights. Cubism Core remains an external local dependency and is not redistributed in the tracked source repository. A future public runnable package, hosted application, or media release must still follow the applicable Live2D publication classification; the renderer's MIT license does not cover Core.
-
-### External artifact reproducibility gaps are non-blocking
-
-The retained Silero Torch Hub cache reports local metadata version `6.2.1`, and the loaded JIT checksum is recorded, but the cache did not preserve the exact Git commit. Exact PyTorch and torchaudio wheel URLs and hashes were also not retained. These are P2 reproducibility improvements because the cache and wheels remain external; they are not public-source redistribution blockers.
-
-## Security and deployment
-
-### Local-only does not mean production-secure
-
-Services bind to `127.0.0.1`, but v0.9 is not designed for hostile multi-user hosts, untrusted local processes, or internet exposure. It has no production authentication or authorization model.
-
-### Frontend production dependencies are reconciled
-
-The final frontend lockfile uses Next.js `16.3.8`, sharp `0.35.5`, and source-map-js `1.2.2`. `npm audit --omit=dev` reports zero production vulnerabilities.
-
-The remaining npm audit findings are confined to the development-only `eslint-config-next` → `fast-glob` → `micromatch` → `braces` chain. They do not enter the production runtime. npm currently offers only a forced breaking downgrade to address this chain, so `npm audit fix --force` is intentionally not used. Treat this as a documented, non-blocking development-tooling limitation and re-evaluate when a compatible upstream fix is available.
-
-## Reporting an issue
-
-When reporting a reproducible problem, include:
-
-- Windows version;
-- CPU, GPU, VRAM, and RAM;
-- Python, Node.js, npm, and browser versions;
-- the failing service and local port;
-- sanitized logs with personal transcripts and absolute user paths removed;
-- whether the failure occurs on cold start, warm start, or a specific turn.
+原始录音、Trace、私人对话与参考声音不随问题报告公开。早期限制见[legacy](docs/legacy/demo-stable/known-issues.md)。
