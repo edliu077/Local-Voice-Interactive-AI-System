@@ -16,12 +16,12 @@
 
 有转录污染及局部任务落实不足，但不足以据此开展无边界调参。当前保留模型、Prompt、摘要及选择机制，优先保护功能基线。
 
-## Publication and recovery — BLOCKED
+## Complete-runtime distribution and recovery — BLOCKED
 
 - 第三方逐组件来源/许可及声明未全部闭环；Wav2Lip权利不能由LiveTalking Apache-2.0推断。权重和素材没有再分发默认授权。
-- 前端锁审计命中已知公告，包括Next、sharp、source-map-js和开发工具链。版本命中与当前Windows调用条件可利用性必须分开；旧main锁也非当前零风险基线。见[安全矩阵](docs/release/PUBLICATION_BLOCKERS.md#frontend-security-review)。本轮未升级。
+- 前端安全依赖已在Stage2C1修补；Stage3A在PublicationCandidate实际进行的完整与生产npm审计当次均为0个已知漏洞包组，ESLint、TypeScript noEmit和Webpack生产构建通过。ESLint9.39.5停止支持警告仍在，不宣称已修复。该审计不保证永久零风险，也不是运行时可利用性或完整系统安全认证。见[前端安全证据](docs/release/PUBLICATION_BLOCKERS.md#frontend-security-review)。
 - 三环境记录不是已验收的clean-install配方；VAD裁剪模块、wheel及外置资产准备仍有缺口。
-- 迁移副本未完整构建、运行七服务或独立恢复。Next生成类型缺失是未构建状态，不能复制.next冒充通过。
+- 本候选已完成前端生产构建及独立TypeScript noEmit检查，Next生成类型由该次构建真实产生，没有复制旧.next冒充通过。浏览器/WebRTC联动、后端与七服务动态运行、完整恢复和长期稳定性仍未验收。
 - 部分历史检查依赖未公开的before/冻结源码，不能直接作为公共克隆的独立回归套件。
 
 ## Runtime limitations

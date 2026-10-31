@@ -2,7 +2,7 @@
 
 > **这是Windows Rebuild的公开集成源码候选，不是开箱即用的完整运行包。** 保留第一方管理器、接口、前端与阶段式文档；完整LiveTalking vendor树、全部CONDITIONAL/BLOCKED文件、三个待确认本地新增及修改补丁均未分发。READY文件也未组成半套运行树。取得未修改上游不能恢复所需的11项改动和3项新增。
 >
-> 原本地系统的八轮等人工功能事实保留，不能转移为本候选验收。Stage2C1在完整迁移副本完成的前端安全/构建检查仅为既有证据；本候选未安装、构建或运行。Q-001/Q-002 OPEN，长期稳定和独立恢复未验收。见[完整文件清单](docs/release/PUBLICATION_FILE_LIST.md)、[外部集成边界](docs/third-party/EXTERNAL_LIVETALKING.md)与[发布门槛](docs/release/PUBLICATION_BLOCKERS.md)。
+> 原本地系统的八轮等人工功能事实保留，不能转移为本候选运行验收。Stage2C1完成前端安全修补；Stage3A已在PublicationCandidate实际通过禁用生命周期脚本的依赖安装、完整/生产npm审计（当次查询均0个已知漏洞包组）、ESLint、TypeScript noEmit和Webpack生产构建。ESLint9.39.5停止支持警告仍保留，不宣称已修复，也不保证永久零风险。本候选未进行浏览器/WebRTC联动、后端模型或七服务运行验收。Q-001/Q-002 OPEN，长期稳定和独立恢复未验收。见[完整文件清单](docs/release/PUBLICATION_FILE_LIST.md)、[外部集成边界](docs/third-party/EXTERNAL_LIVETALKING.md)与[发布门槛](docs/release/PUBLICATION_BLOCKERS.md)。
 
 [English](README.md)
 
@@ -12,7 +12,7 @@
 
 ## 当前迁移状态
 
-Windows Rebuild是当前目标架构和开发阶段名称，不是新的正式项目名。公开候选只携带许可白名单中的第一方工程与说明。Stage2C1在完整迁移副本已通过前端安全/静态构建检查；本候选未安装、构建、七服务运行或独立恢复。完整运行包的授权和恢复仍BLOCKED，详见[当前门槛](docs/release/PUBLICATION_BLOCKERS.md)。
+Windows Rebuild是当前目标架构和开发阶段名称，不是新的正式项目名。公开预览只携带许可白名单中的第一方工程与说明，已完成受控Git对象校验和候选分支发布。Stage3A已在本候选完成前端依赖安装、当次零已知漏洞包组审计及静态/生产构建检查；浏览器/WebRTC联动、后端及七服务动态运行、完整恢复和长期稳定性未验收。完整运行包的授权和恢复仍BLOCKED，详见[当前门槛](docs/release/PUBLICATION_BLOCKERS.md)。
 
 原本地开发系统已有七服务联启、首次点击、数字人连续8轮流程、主动结束、WAV回退及安全关闭人工功能反馈；不能将这些直接写成公开克隆已经运行成功。当前工作源码含冻结后默认关闭的STT取证补丁，不等于冻结ZIP原件。
 
