@@ -2,9 +2,13 @@
 
 This list identifies candidate payload paths, excluding .git and ignored .publication-audit. SHA-256 verification uses Git-stored normalized blob bytes (read with git cat-file from the index or final commit), not raw Windows worktree bytes. Windows checkout line-ending rules may change raw-file SHA-256 without changing Git content. Ancestor Git objects remain unchanged and are audited separately. 167 exact source paths were selected; selected documents may be adapted for candidate scope and one mock fixture is deidentified. All 102 files under the full source third_party/LiveTalking path (101 payload + UPSTREAM.md) are excluded. No package/runtime/cache/media is recursively copied.
 
-Final intended file count: **173**. PUBLICATION_SHA256SUMS.txt hashes the other 172 files, including this inventory and the report; it cannot self-hash. Its own hash is in ignored audit final-state. This is a review allowlist, not an instruction to stage or publish files.
+Final intended file count: **191**. PUBLICATION_SHA256SUMS.txt hashes the other 190 files, including this inventory and the report; it cannot self-hash. Its own hash is in ignored audit final-state. This is a review allowlist, not an instruction to stage or publish files.
 
-## Explicit source-copy allowlist (167 paths)
+## Stage5 showcase update
+
+The current payload adds 18 explicitly approved showcase assets: six real screenshots, six proportional previews, and Chinese/English architecture SVG, PNG and Mermaid files. The two READMEs are updated and the frontend display title is aligned through exactly two JSX text replacements. Models, reference voices, runtime recordings, private logs and excluded vendor implementations remain outside the payload. The 167-path source-copy list below records the earlier migration selection; the 191-path final table is authoritative for the current tree. Existing Git history is retained. Checksums use normalized Git blob bytes and exclude the checksum file itself.
+
+## Historical source-copy allowlist (167 paths; Stage2C3)
 
 - `.gitignore`
 - `ARCHITECTURE.md`
@@ -174,7 +178,7 @@ Final intended file count: **173**. PUBLICATION_SHA256SUMS.txt hashes the other 
 - `scripts/ws-service.py`
 - `tools/README.md`
 
-## Complete final candidate file list (173 paths)
+## Complete final candidate file list (191 paths)
 
 | Candidate path | Preparation |
 | --- | --- |
@@ -195,8 +199,26 @@ Final intended file count: **173**. PUBLICATION_SHA256SUMS.txt hashes the other 
 | `Stop-LLM-1P7B.cmd` | Byte-identical selected source |
 | `Stop-Rebuild.cmd` | Byte-identical selected source |
 | `THIRD_PARTY_NOTICES.md` | Selected source copy; candidate-only privacy/doc adaptation |
+| `assets/architecture/SEVEN_SERVICE_ARCHITECTURE.mmd` | Stage5 first-party architecture diagram / editable source |
+| `assets/architecture/SEVEN_SERVICE_ARCHITECTURE.png` | Stage5 first-party architecture diagram / editable source |
+| `assets/architecture/SEVEN_SERVICE_ARCHITECTURE.svg` | Stage5 first-party architecture diagram / editable source |
+| `assets/architecture/SEVEN_SERVICE_ARCHITECTURE_EN.mmd` | Stage5 first-party architecture diagram / editable source |
+| `assets/architecture/SEVEN_SERVICE_ARCHITECTURE_EN.png` | Stage5 first-party architecture diagram / editable source |
+| `assets/architecture/SEVEN_SERVICE_ARCHITECTURE_EN.svg` | Stage5 first-party architecture diagram / editable source |
 | `assets/avatar/README.md` | Byte-identical selected source |
 | `assets/live2d/README.md` | Byte-identical selected source |
+| `assets/screenshots/s1-initial-interface-preview.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s1-initial-interface.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s2-listening-preview.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s2-listening.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s3-chinese-interaction-preview.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s3-chinese-interaction.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s4-continuous-conversation-preview.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s4-continuous-conversation.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s5-multilingual-interaction-1-preview.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s5-multilingual-interaction-1.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s6-multilingual-interaction-2-preview.jpg` | User-approved real system screenshot / proportional preview |
+| `assets/screenshots/s6-multilingual-interaction-2.jpg` | User-approved real system screenshot / proportional preview |
 | `assets/stt/README.md` | Byte-identical selected source |
 | `assets/voice-clone/README.md` | Byte-identical selected source |
 | `assets/voice/README.md` | Byte-identical selected source |

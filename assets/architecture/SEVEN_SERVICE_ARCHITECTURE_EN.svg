@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1360" viewBox="0 0 1900 1360" role="img" aria-labelledby="title desc">
+<title id="title">Local Voice-Interactive AI System — Seven-Service Architecture</title>
+<desc id="desc">Windows-native seven-service integration with unified startup and shutdown, readiness, resource checks, strict process ownership and continuous monitoring. WebSocket orchestrates speech recognition, the CPU language model and speech synthesis. The Avatar Controller bridges generated audio to LiveTalking and Wav2Lip; WebRTC delivers audio and video directly to the browser. Browser WAV fallback is retained.</desc>
+<defs>
+<marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#567d73" stroke-width="1.6"/></marker>
+<marker id="b" markerWidth="10" markerHeight="10" refX="0" refY="4" orient="auto"><path d="M8,0 L0,4 L8,8" fill="none" stroke="#567d73" stroke-width="1.6"/></marker>
+<marker id="ad" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#a57e4b" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1900" height="1360" fill="#f6f2ea"/>
+<g font-family="Segoe UI,Arial,sans-serif">
+<text x="70" y="68" font-size="42" fill="#193e34" font-weight="700">Local Voice-Interactive AI System</text>
+<text x="70" y="108" font-size="20" fill="#6c7e71" font-weight="500">WINDOWS-NATIVE  /  LOCAL AI  /  VOICE INTERACTION  /  DIGITAL AVATAR</text>
+<rect x="70" y="145" width="1760" height="159" rx="20" fill="#e5f0eb" stroke="#659381" stroke-width="2"/>
+<text x="100" y="185" font-size="29" fill="#234e40" font-weight="700">Windows Unified Management</text>
+<text x="100" y="221" font-size="23" fill="#28433b" font-weight="400">Unified Startup / Shutdown  •  Service Readiness  •  Continuous Resource Monitoring</text>
+<text x="100" y="254" font-size="21" fill="#28433b" font-weight="400">RAM / Commit / Paging / GPU checks  •  PID / FILETIME / exe / command line / process tree / owner / ports</text>
+<text x="100" y="284" font-size="19" fill="#28433b" font-weight="400">Safe shutdown and cleanup of verified owned processes; identity conflicts fail closed. These safeguards are not an all-failure stability guarantee.</text>
+<rect x="55" y="348" width="1790" height="859" rx="24" fill="none" stroke="#a6baaf" stroke-dasharray="10 8"/>
+<text x="80" y="380" font-size="18" fill="#6c7e71" font-weight="600">SEVEN LOCAL SERVICES  •  Numbers indicate the existing startup order, not the processing order.</text>
+<g><rect x="80" y="420" width="440" height="166" rx="20" fill="#fffdfa" stroke="#b9a58b" stroke-width="2"/><circle cx="113" cy="456" r="17" fill="#b9a58b"/><text x="108" y="462" font-size="17" fill="#fff" font-weight="700">1</text><text x="145" y="463" font-size="23" fill="#233e36" font-weight="700">Next.js Frontend  :3000</text><text x="105" y="503" font-size="19" fill="#28433b" font-weight="400">Page served to Edge / Chrome</text><text x="105" y="532" font-size="19" fill="#28433b" font-weight="400">Connect / captions / conversation state</text><text x="105" y="561" font-size="19" fill="#28433b" font-weight="400">Browser UI and playback feedback</text></g>
+<g><rect x="700" y="420" width="500" height="195" rx="20" fill="#e8eff9" stroke="#6c8aaf" stroke-width="2"/><circle cx="733" cy="456" r="17" fill="#6c8aaf"/><text x="728" y="462" font-size="17" fill="#fff" font-weight="700">7</text><text x="765" y="463" font-size="23" fill="#233e36" font-weight="700">WebSocket / Silero VAD  :8767</text><text x="725" y="503" font-size="19" fill="#28433b" font-weight="400">Python microphone capture / speech bounds</text><text x="725" y="532" font-size="19" fill="#28433b" font-weight="400">STT → LLM → TTS → playback lifecycle</text><text x="725" y="561" font-size="19" fill="#28433b" font-weight="400">turn_id / bounded context / rolling summary</text><text x="725" y="590" font-size="19" fill="#28433b" font-weight="400">Half-duplex orchestration</text></g>
+<g><rect x="1400" y="420" width="440" height="166" rx="20" fill="#fffdfa" stroke="#b9a58b" stroke-width="2"/><circle cx="1433" cy="456" r="17" fill="#b9a58b"/><text x="1428" y="462" font-size="17" fill="#fff" font-weight="700">6</text><text x="1465" y="463" font-size="23" fill="#233e36" font-weight="700">Faster-Whisper STT  :8766</text><text x="1425" y="503" font-size="19" fill="#28433b" font-weight="400">Small model / CPU INT8</text><text x="1425" y="532" font-size="19" fill="#28433b" font-weight="400">Actual input WAV ⇄ transcript</text><text x="1425" y="561" font-size="19" fill="#28433b" font-weight="400">Current language setting: zh</text></g>
+<g><rect x="80" y="790" width="440" height="166" rx="20" fill="#fffdfa" stroke="#b9a58b" stroke-width="2"/><circle cx="113" cy="826" r="17" fill="#b9a58b"/><text x="108" y="832" font-size="17" fill="#fff" font-weight="700">5</text><text x="145" y="833" font-size="23" fill="#233e36" font-weight="700">Qwen3-1.7B LLM  :8081</text><text x="105" y="873" font-size="19" fill="#28433b" font-weight="400">Q4_K_M / llama.cpp / CPU-only</text><text x="105" y="902" font-size="19" fill="#28433b" font-weight="400">4096-token context</text><text x="105" y="931" font-size="19" fill="#28433b" font-weight="400">Existing persona and context retained</text></g>
+<g><rect x="700" y="790" width="500" height="166" rx="20" fill="#fffdfa" stroke="#b9a58b" stroke-width="2"/><circle cx="733" cy="826" r="17" fill="#b9a58b"/><text x="728" y="832" font-size="17" fill="#fff" font-weight="700">3</text><text x="765" y="833" font-size="23" fill="#233e36" font-weight="700">Qwen3-TTS  :8765</text><text x="725" y="873" font-size="19" fill="#28433b" font-weight="400">0.6B Base / CUDA / existing cloned voice</text><text x="725" y="902" font-size="19" fill="#28433b" font-weight="400">Final response text ⇄ WAV + metadata</text><text x="725" y="931" font-size="19" fill="#28433b" font-weight="400">Returns audio to the WS orchestrator</text></g>
+<g><rect x="1400" y="790" width="440" height="195" rx="20" fill="#efe8f8" stroke="#9672b2" stroke-width="2"/><circle cx="1433" cy="826" r="17" fill="#9672b2"/><text x="1428" y="832" font-size="17" fill="#fff" font-weight="700">2</text><text x="1465" y="833" font-size="23" fill="#233e36" font-weight="700">Avatar Controller  :8011</text><text x="1425" y="873" font-size="19" fill="#28433b" font-weight="400">Owned sessions / binding / cancellation</text><text x="1425" y="902" font-size="19" fill="#28433b" font-weight="400">Trusted internal audio submission from WS</text><text x="1425" y="931" font-size="19" fill="#28433b" font-weight="400">Audio bridge: adapt / chunk / submit</text><text x="1425" y="960" font-size="19" fill="#28433b" font-weight="400">WebRTC signaling coordination</text></g>
+<g><rect x="1400" y="1045" width="440" height="140" rx="20" fill="#fffdfa" stroke="#b9a58b" stroke-width="2"/><circle cx="1433" cy="1081" r="17" fill="#b9a58b"/><text x="1428" y="1087" font-size="17" fill="#fff" font-weight="700">4</text><text x="1465" y="1088" font-size="23" fill="#233e36" font-weight="700">LiveTalking / Wav2Lip  :8010</text><text x="1425" y="1128" font-size="19" fill="#28433b" font-weight="400">Wav2Lip256 / existing 25 FPS configuration</text><text x="1425" y="1157" font-size="19" fill="#28433b" font-weight="400">Audio-driven lip sync / video composition</text></g>
+<path d="M520 474 H700" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" marker-start="url(#b)"/>
+<text x="541" y="454" font-size="18" fill="#28433b" font-weight="400">Session / state</text>
+<path d="M700 560 H520" stroke="#a57e4b" stroke-width="3" fill="none" stroke-dasharray="9 7" marker-end="url(#ad)" />
+<text x="542" y="587" font-size="18" fill="#946c3d" font-weight="400">WAV fallback</text>
+<path d="M1200 474 H1400" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" />
+<text x="1236" y="454" font-size="18" fill="#28433b" font-weight="400">Input WAV</text>
+<path d="M1400 560 H1200" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" />
+<text x="1236" y="588" font-size="18" fill="#28433b" font-weight="400">Transcript</text>
+<path d="M730 615 V700 H300 V790" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" marker-start="url(#b)"/>
+<text x="340" y="684" font-size="20" fill="#28433b" font-weight="400">Messages ⇄ generated reply</text>
+<path d="M920 790 V615" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" />
+<path d="M970 615 V790" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" />
+<text x="992" y="695" font-size="19" fill="#28433b" font-weight="400">Final text</text>
+<text x="992" y="724" font-size="19" fill="#28433b" font-weight="400">⇄ WAV / metadata</text>
+<path d="M1200 595 H1295 V875 H1400" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" />
+<text x="1312" y="687" font-size="18" fill="#28433b" font-weight="400">Trusted audio</text>
+<text x="1312" y="715" font-size="18" fill="#28433b" font-weight="400">submission</text>
+<path d="M1620 985 V1045" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" />
+<text x="1640" y="1021" font-size="18" fill="#28433b" font-weight="400">Audio / control</text>
+<path d="M1400 1138 H28 V514 H80" stroke="#567d73" stroke-width="3" fill="none"  marker-end="url(#a)" />
+<text x="115" y="1099" font-size="27" fill="#315d50" font-weight="700">WebRTC audio + video → browser</text>
+<text x="115" y="1171" font-size="21" fill="#28433b" font-weight="400">Default avatar audio track. Media does not transit the Next.js page server.</text>
+<path d="M520 424 V329 H1872 V860 H1840" stroke="#a57e4b" stroke-width="3" fill="none" stroke-dasharray="9 7" marker-end="url(#ad)" />
+<text x="1300" y="324" font-size="18" fill="#946c3d" font-weight="400">Browser ⇄ Avatar session / SDP</text>
+<text x="80" y="1248" font-size="21" fill="#28433b" font-weight="400">Solid: data / media   •   Dashed: signaling / WAV fallback   •   Unified management covers every service.</text>
+<text x="80" y="1286" font-size="19" fill="#28433b" font-weight="400">First-party contribution: Windows integration, orchestration, audio bridge and safety management. Models / avatar algorithms are third-party.</text>
+<text x="80" y="1322" font-size="19" fill="#28433b" font-weight="400">Public repository: Integration Source Preview, not a complete runtime package. Q-001 / Q-002 OPEN; long-term stability and independent restore unverified.</text>
+</g></svg>

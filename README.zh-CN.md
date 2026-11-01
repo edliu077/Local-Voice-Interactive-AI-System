@@ -1,49 +1,160 @@
-# 本地语音交互AI系统（Local Voice-Interactive AI System）
+# 本地语音交互AI系统
 
-> **这是Windows Rebuild的公开集成源码候选，不是开箱即用的完整运行包。** 保留第一方管理器、接口、前端与阶段式文档；完整LiveTalking vendor树、全部CONDITIONAL/BLOCKED文件、三个待确认本地新增及修改补丁均未分发。READY文件也未组成半套运行树。取得未修改上游不能恢复所需的11项改动和3项新增。
->
-> 原本地系统的八轮等人工功能事实保留，不能转移为本候选运行验收。Stage2C1完成前端安全修补；Stage3A已在PublicationCandidate实际通过禁用生命周期脚本的依赖安装、完整/生产npm审计（当次查询均0个已知漏洞包组）、ESLint、TypeScript noEmit和Webpack生产构建。ESLint9.39.5停止支持警告仍保留，不宣称已修复，也不保证永久零风险。本候选未进行浏览器/WebRTC联动、后端模型或七服务运行验收。Q-001/Q-002 OPEN，长期稳定和独立恢复未验收。见[完整文件清单](docs/release/PUBLICATION_FILE_LIST.md)、[外部集成边界](docs/third-party/EXTERNAL_LIVETALKING.md)与[发布门槛](docs/release/PUBLICATION_BLOCKERS.md)。
+**Windows 原生 | 本地 AI | 语音交互 | 数字人**
 
-[English](README.md)
+Local Voice-Interactive AI System · [English](README.md)
 
-本项目在原生Windows本机连接语音检测、识别、语言模型、声音克隆和音频驱动视频数字人，面向单用户半双工交互，不是公网多用户服务。
+## 项目概览
 
-**冻结基线：Windows Functional Stable Candidate v1.0-rc1 — Known Quality Issues。Q-001、Q-002均为OPEN。** 功能流程通过不等于完整对话质量、长期稳定性或独立恢复通过。
+本项目在 Windows 本机串联麦克风输入、语音识别、本地语言模型、声音克隆合成及音频驱动数字人。浏览器通过连接状态、字幕、对话控制及 WebRTC 音视频，提供完整的交互入口。
 
-## 当前迁移状态
+第一方工程重点是集成：协调七项持久服务，将独立 TTS 的语音送入数字人链路，并在 16GB 内存设备上管理进程归属与资源边界。底层模型及数字人算法来自第三方组件。
 
-Windows Rebuild是当前目标架构和开发阶段名称，不是新的正式项目名。公开预览只携带许可白名单中的第一方工程与说明，已完成受控Git对象校验和候选分支发布。Stage3A已在本候选完成前端依赖安装、当次零已知漏洞包组审计及静态/生产构建检查；浏览器/WebRTC联动、后端及七服务动态运行、完整恢复和长期稳定性未验收。完整运行包的授权和恢复仍BLOCKED，详见[当前门槛](docs/release/PUBLICATION_BLOCKERS.md)。
+> **公开范围：Integration Source Preview（集成源码预览）。** 仓库提供经过筛选的集成源码和文档，不是克隆后即可运行的完整七服务包。截图来自原完整本地系统。基线为 **Windows Functional Stable Candidate v1.0-rc1 — Known Quality Issues**；**Q-001、Q-002 保持 OPEN**。
 
-原本地开发系统已有七服务联启、首次点击、数字人连续8轮流程、主动结束、WAV回退及安全关闭人工功能反馈；不能将这些直接写成公开克隆已经运行成功。当前工作源码含冻结后默认关闭的STT取证补丁，不等于冻结ZIP原件。
+## 实际界面
 
-## 七服务与语音链
+<a href="assets/screenshots/s1-initial-interface.jpg">
+  <img src="assets/screenshots/s1-initial-interface-preview.jpg" alt="真实Windows Rebuild初始界面，包含正式项目名称、数字人及未连接状态" width="900">
+</a>
 
-| 服务 | 端口 | 当前实现 |
-| --- | ---: | --- |
-| 前端 | 3000 | Next.js生产前端 |
-| Avatar控制器 | 8011 | 本地会话、音频提交和播放控制 |
-| TTS | 8765 | Qwen3-TTS 0.6B Base CUDA声音克隆 |
-| 视频数字人 | 8010 | LiveTalking + Wav2Lip256，25FPS配置 |
-| LLM | 8081 | Qwen3-1.7B Q4_K_M、llama.cpp CPU-only、4096上下文 |
-| STT | 8766 | Faster-Whisper Small CPU INT8 |
-| WebSocket/VAD | 8767 | Python编排及Silero VAD |
+*S1 — 连接前的真实本地界面。点击任意截图可查看原尺寸图片。*
 
-默认路径是VAD→STT→1.7B→TTS→Avatar音频桥→LiveTalking/Wav2Lip→WebRTC。浏览器WAV备用播放保留在高级设置。系统控制听说顺序，普通会话不因六轮自动结束，历史仍有界；不代表无限记忆、全双工打断或流式逐token合成。
+本页以六张真实截图、架构图和技术说明展示工程成果。
 
-## 使用前提
+## 核心功能
 
-先读[Windows准备与恢复说明](docs/windows-setup.md)、[模型/素材](docs/model-downloads.md)及[隐私](docs/privacy.md)。本仓库不含权重、二进制、三套Python环境、参考声音/文本、Avatar帧和前端生产构建，不能克隆后直接启动。
+- **本地语音交互：** Python 麦克风采集及 Silero VAD 划分语句，采用明确的半双工听说流程。
+- **语音识别：** Faster-Whisper Small 持久服务，CPU INT8。
+- **本地文本生成：** Qwen3-1.7B-Q4_K_M，经 llama.cpp CPU-only 推理，4096 上下文。
+- **语音合成：** Qwen3-TTS 0.6B Base CUDA，保留用户批准的克隆声音输出。
+- **数字人与 WebRTC：** Avatar 控制器将合成语音桥接至 LiveTalking / Wav2Lip256，输出音频驱动口型和浏览器音视频。
+- **多轮对话：** 一次点击连接并开始，用户主动结束；最近历史及滚动摘要保持上下文有界。
+- **多语言语音交互 — 实验性：** 用户报告的英语语音输入测试中出现了英文回复，语言准确率仍待验证。
+- **浏览器 WAV 回退：** 保留在高级设置中的备用播放方式。
+- **Windows 统一管理：** 服务就绪、资源预检、持续监护、进程归属核验及安全回收。
 
-完成全部门槛和合法本地准备后，正式入口为`Start-Rebuild.cmd`与`Stop-Rebuild.cmd`，页面为`http://127.0.0.1:3000`。用户点击一次“连接并开始对话”完成连接和音频解锁，点击“结束对话”停止会话。这是原基线的操作方式，不是授权本轮运行不完整副本；必须保留资源预检、持续监护和严格进程归属。
+## 真实系统截图
 
-## 历史与贡献
+以下是本地实际使用时的独立画面，不是重绘界面、连续会话录像或帧率基准。中英文 README 均保留真实中文 UI。
 
-早期Demo Stable已实现本地语音链、Live2D/Browser Audio/RMS、ACK及1/2/6轮功能验证，是后续工作的有效基线。新路线改变数字人呈现和传输职责，复用既有组件和工程经验；不以贬低旧版解释重构。
+| S2 — 正在聆听 | S3 — 中文语音交互 |
+| --- | --- |
+| <a href="assets/screenshots/s2-listening.jpg"><img src="assets/screenshots/s2-listening-preview.jpg" alt="真实已连接和正在听你说话状态" width="440"></a> | <a href="assets/screenshots/s3-chinese-interaction.jpg"><img src="assets/screenshots/s3-chinese-interaction-preview.jpg" alt="真实中文转录、AI回复及正在说话状态" width="440"></a> |
+| 已连接，等待用户说话。 | 用户转录、助手文本与 Speaking 状态。 |
 
-[七阶段开发日志](DEVELOPMENT_LOG.md)同时覆盖环境/模型、语音链、早期数字人、Demo Stable验证、Rebuild决策、实现及质量调查。[旧版说明](docs/legacy/demo-stable/README.md)与[重构原因](docs/architecture/WHY_WINDOWS_REBUILD.md)保留技术事实；原七次Git提交和时间不变，v0.9.1仅按已确认的文档修订定位说明。
+<details>
+<summary>S4 — 后续中文对话</summary>
 
-## 已知问题与发布边界
+<a href="assets/screenshots/s4-continuous-conversation.jpg"><img src="assets/screenshots/s4-continuous-conversation-preview.jpg" alt="后续中文提问、具体工作效率建议及正在说话状态" width="850"></a>
 
-Q-001：个别漏识别/替换有原声确认，早前多轮恶化根因未知。Q-002：历史存在重试后仍重复；后来六轮未复现且未触发重试，不能宣布解决。长期稳定性、完整异常恢复和独立重建未完成。详见[已知问题](KNOWN_ISSUES.md)和[验收分层](docs/validation.md)。
+后续中文问答展示具体的工作效率建议。
 
-原创源码/文档继续Copyright © 2026 Enhua Liu，All rights reserved。第三方各有条款；顶层Apache-2.0不能覆盖全部Wav2Lip派生代码、模型、声音或人物素材。展示权不等于再分发权。[许可与阻塞](docs/release/PUBLICATION_BLOCKERS.md)核定前不发布当前第三方树或新Demo媒体。
+</details>
+
+## 多语言语音交互 — 实验性
+
+以下截图展示用户报告使用英语语音输入测试时的英文回复，该交互能力仍为实验性。
+
+| S5 — 英文回复 I | S6 — 英文回复 II |
+| --- | --- |
+| <a href="assets/screenshots/s5-multilingual-interaction-1.jpg"><img src="assets/screenshots/s5-multilingual-interaction-1-preview.jpg" alt="实验性多语言交互I：用户报告英语语音输入测试中的英文回复" width="440"></a> | <a href="assets/screenshots/s6-multilingual-interaction-2.jpg"><img src="assets/screenshots/s6-multilingual-interaction-2-preview.jpg" alt="实验性多语言交互II：另一组用户报告英语语音输入测试中的英文回复" width="440"></a> |
+
+## 七服务系统架构
+
+<a href="assets/architecture/SEVEN_SERVICE_ARCHITECTURE.svg">
+  <img src="assets/architecture/SEVEN_SERVICE_ARCHITECTURE.png" alt="七服务系统架构：Windows统一管理、WebSocket编排与Avatar音频桥接" width="900">
+</a>
+
+点击架构图查看完整SVG高清版本。[可编辑 Mermaid 源码](assets/architecture/SEVEN_SERVICE_ARCHITECTURE.mmd)。
+
+WebSocket 服务调用 STT、LLM 和 TTS；合成音频先返回编排层，再经受信任的 Avatar 音频桥提交 LiveTalking / Wav2Lip。WebRTC 音视频直接送达浏览器，不由 Next.js 页面服务器转发。浏览器 WAV 是独立备用路径。
+
+| 启动顺序 | 服务 | 本机回环端口 | 职责 |
+| --- | --- | ---: | --- |
+| 1 | Next.js 前端 | 3000 | 界面、字幕、状态及播放控制 |
+| 2 | Avatar 控制器 | 8011 | 会话绑定、音频适配/提交与协商 |
+| 3 | Qwen3-TTS | 8765 | 保留原声音克隆的 CUDA 语音合成 |
+| 4 | LiveTalking / Wav2Lip256 | 8010 | 音频驱动视频数字人与 WebRTC 输出 |
+| 5 | Qwen3-1.7B / llama.cpp | 8081 | CPU-only 文本生成 |
+| 6 | Faster-Whisper Small | 8766 | CPU INT8 持久语音识别 |
+| 7 | WebSocket / Silero VAD | 8767 | 麦克风、轮次生命周期与对话编排 |
+
+## 技术栈
+
+| 层次 | 技术 | 作用 |
+| --- | --- | --- |
+| 服务与集成 | Python、HTTP、WebSocket | 明确服务边界，按事件编排 |
+| 浏览器界面 | Next.js、TypeScript | 一次点击会话控制、状态、字幕及播放 |
+| 语音输入 | Silero VAD、Faster-Whisper Small | 语音边界与语句转录 |
+| 本地生成 | Qwen3-1.7B-Q4_K_M、llama.cpp | 本地 CPU 推理 |
+| 语音输出 | Qwen3-TTS 0.6B Base | GPU 合成及获批克隆声音输出 |
+| 数字人 | LiveTalking、Wav2Lip256 | 外部音频输入、口型与视频融合 |
+| 媒体传输 | WebRTC、Browser WAV 回退 | 默认数字人音视频及备用浏览器音频 |
+
+## 工程亮点
+
+- **Windows 原生集成：** 七服务共享启动、就绪、监督与停止生命周期，不依赖 WSL 或 Docker。
+- **受资源约束的模型部署：** Small CPU INT8 和 CPU-only 1.7B 为 GPU 上的 TTS、Wav2Lip 留出空间；这是目标设备的工程取舍，不意味着内存约束消失。
+- **严格进程归属：** PID、原生创建 FILETIME、exe、完整命令行、父子树、owner 与端口联合验证；未知身份继续安全拒绝。
+- **持续资源监护：** 观察 Available RAM、Commit 余量、分页压力与整卡显存，仅回收本次已验证的自有进程。
+- **可观察的语音编排：** Listening → Transcribing → Thinking → Synthesizing → Speaking → Listening，关联 turn_id 和播放反馈。
+- **Avatar 音频桥：** 受控绑定、适配和交付连接独立 TTS 与视频数字人，保留 WAV 回退能力。
+- **有边界的验收：** 离线契约、真实服务 READY 与人工对话是不同证据层级，分别记录。
+
+WebRTC 传输连续媒体，识别、文本生成和合成则按语句编排。不宣称全双工打断、逐 token 流式语音生成、无限记忆或所有异常下的恢复保证。
+
+## 开发与验证
+
+| 证据层次 | 已确认内容 | 边界 |
+| --- | --- | --- |
+| 原完整本地系统 | 用户确认七服务、首次点击、数字人连续八轮、主动结束、WAV 回退、安全关闭 | 功能验收，不等于完整对话质量或长期稳定性 |
+| 公开源码候选 | 禁用生命周期脚本的依赖安装；当次完整/生产 npm 审计均为0个已知漏洞包组；ESLint、TypeScript noEmit、Webpack 生产构建通过 | 仅前端证据；ESLint 停止支持警告仍保留，不保证永久零风险 |
+| 展示标题同步 | 两处文案与本地截图对齐，TypeScript、定向 ESLint 与 Webpack 生产构建通过 | 仅展示文字，不改变交互、模型或安全策略 |
+| 当前展示素材 | 六张真实截图及可编辑架构图 | 静态图片不证明实际 FPS、声音质量、同步或同会话连续性 |
+| 未验收 | 公开克隆七服务运行、完整独立恢复、长期稳定性及全面异常恢复 | 不标记 PASS |
+
+公开工作源码还含冻结后默认关闭的 STT 取证补丁；集成源码预览及当前本地展示版本均不是冻结 rc1 ZIP 的逐字节副本。
+
+### 七个开发阶段
+
+1. **Phase 1 — Environment and Model Validation：** Windows 原生可行性及 STT/TTS/LLM 逐组件验证。
+2. **Phase 2 — Voice Interaction Pipeline：** VAD、持久服务及明确的半双工轮次。
+3. **Phase 3 — Early Digital Avatar Integration：** WebSocket、Next.js、Browser Audio、Live2D/RMS 口型。
+4. **Phase 4 — Demo Stable Validation：** 生产前端、1/2/6轮流程、启动器及源码包边界。
+5. **Phase 5 — Windows Rebuild Architecture Decision：** 保留有效基线，选择音频驱动视频数字人路线。
+6. **Phase 6 — Windows Rebuild Implementation：** Avatar 桥、WebRTC、七服务监护及产品化操作。
+7. **Phase 7 — Functional Acceptance and Quality Investigation：** 功能候选冻结，保留并调查 STT/LLM 开放问题。
+
+[完整开发日志](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/DEVELOPMENT_LOG.md)、[Demo Stable历史](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/legacy/demo-stable/README.md)、[为什么采用Windows Rebuild](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/architecture/WHY_WINDOWS_REBUILD.md)。原七次 Git 提交及历史完整保留，早期 Demo Stable 是后续工程的有效功能基础。
+
+## 硬件与运行约束
+
+目标设备为 **16GB RAM、NVIDIA GeForce RTX 4060 Laptop GPU 8GB VRAM 的 Windows 笔记本**。LLM 为 CPU-only，STT 为 CPU INT8，TTS 与 Wav2Lip 使用 GPU。Wav2Lip256 保留25FPS配置，这不是持续实测输出帧率保证。
+
+全系统共同驻留的内存余量有限。额外录屏软件在现有预算下不能稳定运行，因此作品集采用真实截图、架构图和工程说明，不提供公开视频 Demo。RAM、Commit、分页与 GPU 保护均保留。
+
+## 公开仓库范围
+
+本仓库是 **Integration Source Preview**，不是完整运行发行包。保留经过选择的第一方集成、服务管理器、前端、配置示例与技术历史；不包含完整 LiveTalking vendor 树及未解决的派生实现/补丁、模型权重、二进制、Python 环境、私人声音参考/文本/声音制品，以及恢复所需的 Avatar 源素材与派生数据。
+
+截图记录原本地系统，不会补齐上述运行资产。保留的 Start-Rebuild.cmd / Stop-Rebuild.cmd 表达本地受控生命周期，不代表克隆即运行。独立恢复仍未验收。
+
+项目演示展示授权不等于模型、私人参考声音或第三方源码的再分发授权；既有版权及各组件条款不变。
+
+## 已知问题
+
+- **Q-001 — 语音识别准确率：OPEN。** 个别遗漏和替换已经确认，早期多轮逐渐恶化的根因未知；跨语言截图不代表此问题已解决。
+- **Q-002 — 重复回答：OPEN。** 后续有限测试未复现历史重复，不构成修复证明。
+
+长期稳定性、全面异常恢复及独立恢复尚未验收，见[已知问题](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/KNOWN_ISSUES.md)。
+
+## 技术文档
+
+[架构](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/ARCHITECTURE.md) · [验收边界](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/validation.md) · [变更日志](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/CHANGELOG.md) · [路线图](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/ROADMAP.md)<br>
+[Windows准备与恢复](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/windows-setup.md) · [模型与外置资产](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/model-downloads.md) · [隐私](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/privacy.md)<br>
+[第三方声明](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/THIRD_PARTY_NOTICES.md) · [外部LiveTalking集成边界](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/third-party/EXTERNAL_LIVETALKING.md) · [发布门槛](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/release/PUBLICATION_BLOCKERS.md) · [已审核源码清单](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/release/PUBLICATION_FILE_LIST.md)
+
+原创源码及文档继续 Copyright © 2026 Enhua Liu，保留既有 All rights reserved 条款；第三方模型、软件和素材遵循各自条件。本展示不授予新的宽松许可。
+
+**[Read the English version](README.md)**

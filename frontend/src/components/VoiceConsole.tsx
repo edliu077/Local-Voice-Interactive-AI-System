@@ -559,8 +559,8 @@ export function VoiceConsole() {
     <main className="shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Local voice companion</p>
-          <h1>赛博女友</h1>
+          <p className="eyebrow">Local Voice-Interactive AI System</p>
+          <h1>本地语音交互AI系统</h1>
         </div>
         <span className={`connection ${connection}`}>连接状态：{connection === "connected" ? "已连接" : connection === "connecting" ? "正在连接" : connection === "error" ? "连接错误" : "未连接"}</span>
       </header>
