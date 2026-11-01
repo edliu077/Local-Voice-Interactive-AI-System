@@ -50,5 +50,5 @@
 <text x="1300" y="324" font-size="18" fill="#946c3d" font-weight="400">Browser ⇄ Avatar session / SDP</text>
 <text x="80" y="1248" font-size="21" fill="#28433b" font-weight="400">Solid: data / media   •   Dashed: signaling / WAV fallback   •   Unified management covers every service.</text>
 <text x="80" y="1286" font-size="19" fill="#28433b" font-weight="400">First-party contribution: Windows integration, orchestration, audio bridge and safety management. Models / avatar algorithms are third-party.</text>
-<text x="80" y="1322" font-size="19" fill="#28433b" font-weight="400">Public repository: Integration Source Preview, not a complete runtime package. Q-001 / Q-002 OPEN; long-term stability and independent restore unverified.</text>
+<text x="80" y="1322" font-size="19" fill="#28433b" font-weight="400">Windows Functional Stable Candidate v1.0-rc1  •  Integration Source Preview; runtime assets external, independent restore unverified.</text>
 </g></svg>

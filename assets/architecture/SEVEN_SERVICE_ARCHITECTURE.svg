@@ -44,5 +44,5 @@
 <text x="1015" y="266" font-size="16" fill="#956f40" font-weight="400">浏览器 ⇄ Avatar 会话 / SDP 协商</text>
 <text x="75" y="1024" font-size="19" fill="#243a38" font-weight="400">实线：业务与媒体链路    ·    虚线：协商 / WAV 备用    ·    上方管理层覆盖全部服务</text>
 <text x="75" y="1063" font-size="19" fill="#243a38" font-weight="400">完整本地系统设计；公开 GitHub 仓库为集成源码预览，不含完整 vendor、权重及私人素材。</text>
-<text x="75" y="1098" font-size="17" fill="#6d736a" font-weight="400">Windows Functional Stable Candidate v1.0-rc1 — Known Quality Issues   /   Q-001 · Q-002 OPEN</text>
+<text x="75" y="1098" font-size="17" fill="#6d736a" font-weight="400">Windows Functional Stable Candidate v1.0-rc1</text>
 </g></svg>

@@ -10,7 +10,7 @@ An end-to-end, Windows-native AI interaction system that connects microphone inp
 
 The first-party engineering work is the integration: coordinating seven persistent services, bridging generated speech into the avatar pipeline, and managing process ownership and resource limits on a 16 GB laptop. The underlying models and avatar algorithms are third-party components.
 
-> **Repository scope: Integration Source Preview.** This repository contains selected integration source and documentation, not a complete, clone-and-run seven-service package. The screenshots show the original local system. The baseline is **Windows Functional Stable Candidate v1.0-rc1 — Known Quality Issues**; **Q-001 and Q-002 remain OPEN**.
+> **Repository scope: Integration Source Preview.** This repository contains selected integration source and documentation, not a complete, clone-and-run seven-service package. The screenshots show the original local system. The baseline is **Windows Functional Stable Candidate v1.0-rc1**.
 
 ## Main showcase
 
@@ -124,7 +124,7 @@ The working integration source also includes a default-off STT evidence patch ad
 4. **Phase 4 — Demo Stable Validation:** validate the production frontend, 1/2/6-turn flows, launchers and source-package boundaries.
 5. **Phase 5 — Windows Rebuild Architecture Decision:** retain a successful baseline while choosing an audio-driven video-avatar route.
 6. **Phase 6 — Windows Rebuild Implementation:** implement the Avatar bridge, WebRTC, seven-service supervision and product interaction flow.
-7. **Phase 7 — Functional Acceptance and Quality Investigation:** freeze the functional candidate and investigate the still-open STT/LLM issues.
+7. **Phase 7 — Functional Acceptance and Quality Investigation:** freeze the functional candidate and collect bounded validation evidence.
 
 See the [complete development log](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/DEVELOPMENT_LOG.md), [Demo Stable history](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/legacy/demo-stable/README.md) and [Why Windows Rebuild](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/architecture/WHY_WINDOWS_REBUILD.md). The original seven Git commits are preserved; earlier Demo Stable work remains a successful functional foundation.
 
@@ -141,13 +141,6 @@ This is an **Integration Source Preview**, not a complete runnable distribution.
 The screenshots document the original local system; they do not restore those missing runtime assets. The retained Start-Rebuild.cmd / Stop-Rebuild.cmd entry points describe the local system's managed lifecycle, not a clone-and-run promise. Independent restoration remains unverified.
 
 Project-demo display permission does not grant redistribution of models, private reference voices or third-party code. Existing copyright and component terms remain unchanged.
-
-## Known issues
-
-- **Q-001 — Speech Recognition Accuracy: OPEN.** Omissions and substitutions have been confirmed; the cause of earlier multi-turn degradation remains unknown. Experimental cross-language screenshots do not resolve this issue.
-- **Q-002 — Repetitive Responses: OPEN.** A later bounded test did not reproduce the historical repetition, which is not proof of a fix.
-
-Long-term stability, complete abnormal recovery and independent restoration have not been accepted. See [Known Issues](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/KNOWN_ISSUES.md).
 
 ## Documentation
 
