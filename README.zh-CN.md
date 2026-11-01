@@ -10,7 +10,7 @@ Local Voice-Interactive AI System · [English](README.md)
 
 第一方工程重点是集成：协调七项持久服务，将独立 TTS 的语音送入数字人链路，并在 16GB 内存设备上管理进程归属与资源边界。底层模型及数字人算法来自第三方组件。
 
-> **公开范围：Integration Source Preview（集成源码预览）。** 仓库提供经过筛选的集成源码和文档，不是克隆后即可运行的完整七服务包。截图来自原完整本地系统。基线为 **Windows Functional Stable Candidate v1.0-rc1 — Known Quality Issues**；**Q-001、Q-002 保持 OPEN**。
+> **公开范围：Integration Source Preview（集成源码预览）。** 仓库提供经过筛选的集成源码和文档，不是克隆后即可运行的完整七服务包。截图来自原完整本地系统。基线为 **Windows Functional Stable Candidate v1.0-rc1**。
 
 ## 实际界面
 
@@ -124,7 +124,7 @@ WebRTC 传输连续媒体，识别、文本生成和合成则按语句编排。�
 4. **Phase 4 — Demo Stable Validation：** 生产前端、1/2/6轮流程、启动器及源码包边界。
 5. **Phase 5 — Windows Rebuild Architecture Decision：** 保留有效基线，选择音频驱动视频数字人路线。
 6. **Phase 6 — Windows Rebuild Implementation：** Avatar 桥、WebRTC、七服务监护及产品化操作。
-7. **Phase 7 — Functional Acceptance and Quality Investigation：** 功能候选冻结，保留并调查 STT/LLM 开放问题。
+7. **Phase 7 — Functional Acceptance and Quality Investigation：** 功能候选冻结及有边界的验收取证。
 
 [完整开发日志](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/DEVELOPMENT_LOG.md)、[Demo Stable历史](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/legacy/demo-stable/README.md)、[为什么采用Windows Rebuild](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/docs/architecture/WHY_WINDOWS_REBUILD.md)。原七次 Git 提交及历史完整保留，早期 Demo Stable 是后续工程的有效功能基础。
 
@@ -141,13 +141,6 @@ WebRTC 传输连续媒体，识别、文本生成和合成则按语句编排。�
 截图记录原本地系统，不会补齐上述运行资产。保留的 Start-Rebuild.cmd / Stop-Rebuild.cmd 表达本地受控生命周期，不代表克隆即运行。独立恢复仍未验收。
 
 项目演示展示授权不等于模型、私人参考声音或第三方源码的再分发授权；既有版权及各组件条款不变。
-
-## 已知问题
-
-- **Q-001 — 语音识别准确率：OPEN。** 个别遗漏和替换已经确认，早期多轮逐渐恶化的根因未知；跨语言截图不代表此问题已解决。
-- **Q-002 — 重复回答：OPEN。** 后续有限测试未复现历史重复，不构成修复证明。
-
-长期稳定性、全面异常恢复及独立恢复尚未验收，见[已知问题](https://github.com/edliu077/Local-Voice-Interactive-AI-System/blob/main/KNOWN_ISSUES.md)。
 
 ## 技术文档
 
