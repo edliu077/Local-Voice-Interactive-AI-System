@@ -1,0 +1,37 @@
+%% Local Voice-Interactive AI System — editable English architecture
+%% Seven numbered services; browser, microphone and management are not extra services.
+flowchart TB
+    USER["User / local microphone"]
+    BROWSER["Edge / Chrome browser<br/>One-click connect / captions / avatar audio"]
+    MANAGER["Windows Unified Management<br/>Unified Startup / Shutdown / Service Readiness<br/>Continuous Resource Monitoring / Safe Shutdown and Cleanup"]
+    MONITOR["RAM / Commit / Paging / whole-GPU resource checks<br/>Process Ownership Verification<br/>PID / FILETIME / exe / command line / parent tree / owner / ports<br/>Conflicts fail closed; not an all-failure stability guarantee"]
+    subgraph SERVICES["Windows-native seven-service integration · numbers = startup order"]
+        NEXT["1 · Next.js Frontend :3000<br/>Page / conversation state / advanced WAV fallback"]
+        CTRL["2 · Avatar Controller :8011<br/>Owned sessions / binding / cancellation<br/>Audio adaptation and bridging / WebRTC signaling"]
+        TTS["3 · Qwen3-TTS :8765<br/>0.6B Base CUDA / existing cloned voice<br/>Text to WAV and metadata"]
+        LT["4 · LiveTalking / Wav2Lip :8010<br/>Wav2Lip256 / existing 25 FPS configuration<br/>Audio-driven lip sync and video composition"]
+        LLM["5 · Qwen3-1.7B LLM :8081<br/>Q4_K_M / llama.cpp / CPU-only<br/>4096-token context"]
+        STT["6 · Faster-Whisper STT :8766<br/>Small / CPU INT8 / current language=zh"]
+        WS["7 · WebSocket / Silero VAD :8767<br/>Python microphone capture / turn_id / bounded context<br/>STT → LLM → TTS → playback feedback<br/>Half-duplex / rolling summary"]
+    end
+    USER -->|"Microphone / VAD"| WS
+    NEXT -->|"Serves page"| BROWSER
+    BROWSER <-->|"Session / captions / state / playback feedback"| WS
+    WS <-->|"Actual input WAV / transcript"| STT
+    WS <-->|"Context messages / generated reply"| LLM
+    WS <-->|"Final text / synthesized WAV and metadata"| TTS
+    WS -->|"Trusted internal audio submission / turn_id"| CTRL
+    CTRL -->|"Audio adaptation / chunks / control"| LT
+    LT -->|"WebRTC audio + video directly to browser"| BROWSER
+    BROWSER -.->|"Session / SDP signaling"| CTRL
+    CTRL -.->|"Signaling / control"| LT
+    WS -.->|"Advanced setting: Browser WAV fallback"| BROWSER
+    MANAGER -.-> NEXT & CTRL & TTS & LT & LLM & STT & WS
+    MONITOR -.-> MANAGER
+    SCOPE["First-party engineering: integration / orchestration / audio bridge / safety management<br/>Models and avatar algorithms are third-party<br/>Integration Source Preview: vendor, weights and private assets are not bundled<br/>Q-001 / Q-002 OPEN; long-term stability / independent restore unverified"]
+    classDef orchestration fill:#e8eff9,stroke:#6c8aaf,color:#233e36
+    classDef bridge fill:#efe8f8,stroke:#9672b2,color:#233e36
+    classDef management fill:#e5f0eb,stroke:#659381,color:#233e36
+    class WS orchestration
+    class CTRL bridge
+    class MANAGER,MONITOR management

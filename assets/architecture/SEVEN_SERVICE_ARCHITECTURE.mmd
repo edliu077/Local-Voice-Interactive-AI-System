@@ -1,0 +1,40 @@
+%% 本地语音交互AI系统（Local Voice-Interactive AI System）
+%% 可编辑架构源；实线为业务流，虚线为管理/协商/备用路径。
+%% 七个服务节点之外的浏览器和管理器不计入七服务。
+flowchart TB
+    USER["用户 / 本机麦克风"]
+    BROWSER["Edge / Chrome 浏览器<br/>一次点击 · 字幕 · 数字人音轨"]
+    MANAGER["Windows 统一管理<br/>Start-Rebuild.cmd / Stop-Rebuild.cmd<br/>逐项 preflight → READY → 持续监护 → 自有进程安全回收"]
+    MONITOR["RAM / Commit / 分页 / 整卡 GPU<br/>PID + FILETIME + exe + 命令行 + 进程树 + owner / 端口"]
+
+    subgraph SERVICES["Windows 原生 · 七项服务（编号为原启动顺序）"]
+        NEXT["① Next.js :3000<br/>页面 / 状态 / 高级设置 WAV 回退"]
+        CTRL["② Avatar 控制器 :8011<br/>会话绑定 / 音频桥 / 取消 / WebRTC 协商"]
+        TTS["③ Qwen3-TTS :8765<br/>0.6B Base CUDA · 原声音克隆"]
+        LT["④ LiveTalking + Wav2Lip256 :8010<br/>音频驱动口型 / 画面融合 · 25 FPS 配置"]
+        LLM["⑤ Qwen3-1.7B-Q4_K_M :8081<br/>llama.cpp · CPU-only · 4096 上下文"]
+        STT["⑥ Faster-Whisper Small :8766<br/>CPU INT8"]
+        WS["⑦ WebSocket / Silero VAD :8767<br/>Python 麦克风采集 / turn_id / 有界上下文<br/>识别→生成→合成→播放反馈编排"]
+    end
+
+    USER -->|"本机输入 · VAD"| WS
+    NEXT -->|"提供页面"| BROWSER
+    BROWSER <-->|"会话 / 字幕 / 状态 / 播放反馈"| WS
+    WS <-->|"实际输入 WAV / 转录文本"| STT
+    WS <-->|"消息上下文 / 生成回复"| LLM
+    WS <-->|"最终正文 / 合成 WAV 与元数据"| TTS
+    WS -->|"可信内部调用 · 已生成音频 / turn_id"| CTRL
+    CTRL -->|"音频适配 / 分块 / 提交"| LT
+    LT -->|"WebRTC 音频 + 视频 · 媒体直达浏览器"| BROWSER
+    BROWSER -.->|"SDP / 会话协商"| CTRL
+    CTRL -.->|"协商 / 控制"| LT
+    WS -.->|"高级设置 · Browser WAV 备用音频"| BROWSER
+    MANAGER -.-> NEXT & CTRL & TTS & LT & LLM & STT & WS
+    MONITOR -.-> MANAGER
+
+    classDef orchestration fill:#e6eef8,stroke:#5273a3,color:#172b49
+    classDef bridge fill:#eee7f7,stroke:#8866ac,color:#38224f
+    classDef management fill:#e5f0eb,stroke:#538574,color:#1e4036
+    class WS orchestration
+    class CTRL bridge
+    class MANAGER,MONITOR management
